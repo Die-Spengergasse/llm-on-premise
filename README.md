@@ -88,7 +88,9 @@ Die Modellwahl hängt von der finalen Hardware ab. Aktueller Plan:
 |---|---|---|---|
 | Backend #1 | Qwen3 30B | General + Coding (stark) | ~18 GB |
 | Backend #2 | Devstral 24B | Coding-Fokus | ~14 GB |
-| Backend #3 | Qwen3 14B | Schnelle Antworten, viele parallele Nutzer | ~8 GB |
+| Backend #3 | Gemma 4 26B MoE *oder* Qwen3 14B | Schnelle Antworten, Tool Calling (SearXNG) | ~16 GB / ~8 GB |
+
+> **Hinweis:** Backend #3 wird evaluiert — Gemma 4 26B MoE bietet bessere Qualität + nativen Tool Calling Support bei ähnlichem Footprint. Siehe [Issue #7](https://github.com/Die-Spengergasse/llm-on-premise/issues/7).
 
 ## Request-Flow
 
@@ -147,6 +149,6 @@ Andere Hardware-Optionen siehe [Hardware-Tabelle](#hardware).
 | [#2](https://github.com/Die-Spengergasse/llm-on-premise/issues/2) | Infra: configure DGX Spark nodes with vLLM | infrastructure |
 | [#3](https://github.com/Die-Spengergasse/llm-on-premise/issues/3) | Infra: set up management VM (LiteLLM + Open WebUI + SearXNG) | infrastructure |
 | [#4](https://github.com/Die-Spengergasse/llm-on-premise/issues/4) | Infra: network hardening — AI servers not publicly reachable | infrastructure, security |
-| [#5](https://github.com/Die-Spengergasse/llm-on-premise/issues/5) | Eval: Gemma 4 as VIP model for advanced users | enhancement |
+| [#5](https://github.com/Die-Spengergasse/llm-on-premise/issues/5) | ~~Eval: Gemma 4 as VIP model~~ → merged into #7 | closed |
 | [#6](https://github.com/Die-Spengergasse/llm-on-premise/issues/6) | Feat: LiteLLM user groups, access control, and model routing | enhancement |
-| [#7](https://github.com/Die-Spengergasse/llm-on-premise/issues/7) | Eval: Super Gemma 4 26B Uncensored — VIP model with tool-calling fixes | enhancement |
+| [#7](https://github.com/Die-Spengergasse/llm-on-premise/issues/7) | Eval: Gemma 4 model family + Super Gemma 4 26B Uncensored | enhancement |
