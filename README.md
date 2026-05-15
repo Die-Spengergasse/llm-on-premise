@@ -138,3 +138,15 @@ Andere Hardware-Optionen siehe [Hardware-Tabelle](#hardware).
 | 2026-05-15 | AI-Backend nicht öffentlich erreichbar, nur via Proxy | Beschlossen |
 | 2026-05-15 | Auth durch Schul-Infrastruktur (SSO/IdM), keine eigene Auth-Lösung | Beschlossen |
 | 2026-05-15 | Zugriff neben Browser auch via Coding-Tools (OpenCode, Kilo Code) über OpenAI-kompatible API | Beschlossen |
+
+## Issues
+
+| # | Titel | Labels |
+|---|---|---|
+| [#1](https://github.com/Die-Spengergasse/llm-on-premise/issues/1) | Docs: create detailed architecture documentation | documentation |
+| [#2](https://github.com/Die-Spengergasse/llm-on-premise/issues/2) | Infra: configure DGX Spark nodes with vLLM | infrastructure |
+| [#3](https://github.com/Die-Spengergasse/llm-on-premise/issues/3) | Infra: set up management VM (LiteLLM + Open WebUI + SearXNG) | infrastructure |
+| [#4](https://github.com/Die-Spengergasse/llm-on-premise/issues/4) | Infra: network hardening — AI servers not publicly reachable | infrastructure, security |
+| [#5](https://github.com/Die-Spengergasse/llm-on-premise/issues/5) | Eval: Gemma 4 as VIP model for advanced users | enhancement |
+| [#6](https://github.com/Die-Spengergasse/llm-on-premise/issues/6) | Feat: LiteLLM user groups, access control, and model routing | enhancement |
+| [#7](https://github.com/Die-Spengergasse/llm-on-premise/issues/7) | Eval: Super Gemma 4 26B Uncensored — VIP model with tool-calling fixes | enhancement |
