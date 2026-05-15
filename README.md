@@ -89,7 +89,6 @@ Die Modellwahl hängt von der finalen Hardware ab. Aktueller Plan:
 | Backend #1 | Qwen3 30B | General + Coding (stark) | ~18 GB |
 | Backend #2 | Devstral 24B | Coding-Fokus | ~14 GB |
 | Backend #3 | Qwen3 14B | Schnelle Antworten, viele parallele Nutzer | ~8 GB |
-| VIP-Backend | Gemma 4 | Premium-Inferenz für besondere Anforderungen | TBD |
 
 ## Request-Flow
 
