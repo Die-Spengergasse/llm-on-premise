@@ -22,10 +22,10 @@ Die konkrete Hardware-Architektur ist noch offen. Zur Diskussion stehen u.a. NVI
 │  │  │  Proxy)   │  │            │  │  für RAG) │  │    │
 │  │  └─────┬─────┘  └──────┬─────┘  └─────┬─────┘  │    │
 │  │        │               │              │         │    │
-│  │  ┌─────┴───────────────┴──────────────┴──────┐  │    │
-│  │  │  Auth (SSO / OAuth2 / Schul-IdM)          │  │    │
-│  │  │  Token-Management für Schüler              │  │    │
-│  │  └───────────────────────────────────────────┘  │    │
+│  │  ┌────────────────────────────────────────────┐  │    │
+│  │  │  Auth: bereitgestellt durch Schul-Infra    │  │    │
+│  │  │  (SSO / IdM / OAuth2)                      │  │    │
+│  │  └────────────────────────────────────────────┘  │    │
 │  └────────────────────┬────────────────────────────┘    │
 │                       │ Internes VLAN ONLY              │
 │          ┌────────────┼────────────┐                    │
@@ -64,10 +64,23 @@ Die folgenden Diagramme zeigen die Architektur exemplarisch mit DGX Spark als Ba
 
 | Komponente | Zweck |
 |---|---|
-| **LiteLLM** | API-Proxy, Routing, Rate Limiting, Token-Management, Logging |
+| **LiteLLM** | API-Proxy, Routing, Rate Limiting, Logging |
 | **Open WebUI** | Chat-Frontend für Schüler (browserbasiert) |
 | **SearXNG** | Lokale Suchinstanz für RAG / Tool Use |
-| **vLLM** | LLM-Serving auf allen DGX Sparks mit Continuous Batching |
+| **vLLM** | LLM-Serving auf den Backend-Knoten mit Continuous Batching |
+
+## Client-Zugriff
+
+Die Schüler greifen über verschiedene Clients auf die Infrastruktur zu, alle über die **OpenAI-kompatible API** von LiteLLM:
+
+| Client | Verwendung |
+|---|---|
+| **Open WebUI** | Browserbasierter Chat (über Schul-SSO authentifiziert) |
+| **OpenCode** | Terminal-basiertes Coding-Tool (API-Key) |
+| **Kilo Code** | VS Code / Cursor-Erweiterung für Coding (API-Key) |
+| **Beliebige OpenAI-kompatible Clients** | Weitere Tools die OpenAI-API sprechen |
+
+Auth wird vollständig von der Schul-Infrastruktur bereitgestellt (SSO / IdM). Schüler können sich API-Tokens generieren, um Coding-Tools anzubinden.
 
 ## Modell-Belegung (exemplarisch)
 
@@ -82,16 +95,22 @@ Die Modellwahl hängt von der finalen Hardware ab. Aktueller Plan:
 ## Request-Flow
 
 ```
-Schüler (Browser)
-    │ HTTPS (via Schul-SSO)
-    ▼
-Open WebUI          ← Chat-Oberfläche, Login
-    │ API-Call (OpenAI-kompatibel)
-    ▼
-LiteLLM Proxy       ← Token-Auth, Rate Limiting, Routing, Logging
-    │ Interner API-Call
-    ▼
-vLLM auf DGX Spark  ← Modell-Inferenz + Tool Use (SearXNG)
+Schüler
+    │
+    ├── Browser ──── Open WebUI ─────────┐
+    ├── OpenCode ──── Direct API-Call ───┤
+    ├── Kilo Code ─── Direct API-Call ───┤
+    └── Other ──────── Direct API-Call ──┘
+                                         │
+                            HTTPS + Auth (Schul-SSO / API-Key)
+                                         │
+                                         ▼
+                                  LiteLLM Proxy  ← Routing, Rate Limiting, Logging
+                                         │
+                            Interner API-Call (VLAN)
+                                         │
+                                         ▼
+                              vLLM Backend  ← Modell-Inferenz + Tool Use (SearXNG)
 ```
 
 ## Netzwerk
@@ -99,7 +118,8 @@ vLLM auf DGX Spark  ← Modell-Inferenz + Tool Use (SearXNG)
 - DGX Sparks und Management VM stehen im ZID-Rechenzentrum (19"-Rack, Kühlung vorhanden)
 - DGX Sparks sind **nicht öffentlich erreichbar** — nur die Management VM ist per Schul-URL zugänglich
 - Interne Kommunikation über VLAN
-- Auth über bestehende Schul-Infrastruktur (SSO / IdM)
+- Auth wird von der Schul-Infrastruktur bereitgestellt (SSO / IdM), kein separates Auth-System nötig
+- API-Tokens für Coding-Clients (OpenCode, Kilo Code) über Schul-Infra generiert
 
 ## Budget
 
@@ -118,4 +138,5 @@ Andere Hardware-Optionen siehe [Hardware-Tabelle](#hardware).
 | 2026-05-15 | Projektinitialisierung, Evaluierung der Hardware-Optionen | Offen |
 | 2026-05-15 | Management-VM mit LiteLLM + Open WebUI + SearXNG als feste Architektur | Beschlossen |
 | 2026-05-15 | AI-Backend nicht öffentlich erreichbar, nur via Proxy | Beschlossen |
-| 2026-05-15 | Favorit: 3x NVIDIA DGX Spark | Under evaluation |
+| 2026-05-15 | Auth durch Schul-Infrastruktur (SSO/IdM), keine eigene Auth-Lösung | Beschlossen |
+| 2026-05-15 | Zugriff neben Browser auch via Coding-Tools (OpenCode, Kilo Code) über OpenAI-kompatible API | Beschlossen |
