@@ -49,14 +49,14 @@ Knoten laufen in einem isolierten Bereich und sind ausschließlich
                                        ║
               ┌────────────────────────╬───────────────────────┐
               │                        ║                       │
-              │                Schulnetz / VLAN                │
-              │                        ║                       │
+         Schulnetz                    VPN                  Internet?
+              │                        │                       │
          ┌────┴────┐            ┌──────┴──────┐          ┌────┴────┐
-         │ Schüler │            │    Lehrer    │          │ Coding- │
-         ├─────────┤            ├──────────────┤          │  Tools  │
-         │ Browser │            │   Browser    │          ├─────────┤
-         │Coding-T.│            │  Coding-T.   │          │API-Key  │
-         └─────────┘            └──────────────┘          └─────────┘
+         │ ┌─────┐ │            │   ┌─────┐   │          │ ┌─────┐ │
+         │ │     │ │            │   │     │   │          │ │     │ │
+         │ └──┬──┘ │            │  ┌┴─────┴┐  │          │ └──┬──┘ │
+         │   ───   │            │  └───────┘  │          │   ───   │
+         └─────────┘            └─────────────┘          └─────────┘
 ```
 
 ## Software-Stack
