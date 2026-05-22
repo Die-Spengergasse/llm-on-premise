@@ -22,27 +22,41 @@ Aktuell in der Planungsphase. Hardware-Entscheidung noch offen.
 
 ## Architektur (Überblick)
 
-Eine zentrale Management-VM (LiteLLM + Open WebUI + SearXNG) ist der
-einzige öffentlich erreichbare Einstiegspunkt. Die AI-Backend-Knoten
-laufen in einem isolierten VLAN und sind nur über den Proxy erreichbar.
+Die Management-VM (LiteLLM + Open WebUI + SearXNG) ist der einzige
+Einstiegspunkt für alle Clients aus dem Schulnetz. Die AI-Backend-
+Knoten laufen in einem isolierten Bereich und sind ausschließlich
+über die Management-VM erreichbar.
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│ ZID Rechenzentrum                                        │
-│                                                          │
-│  Management VM (LiteLLM, Open WebUI, SearXNG)            │
-│       │                  │              │                │
-│       └──────────┬───────┴──────┬───────┘                │
-│                  │ Internes VLAN │                        │
-│          ┌───────┴───────┬───────┴───────┐                │
-│       Backend #1     Backend #2     Backend #3            │
-│       (vLLM)         (vLLM)         (vLLM)               │
-│                                                          │
-│  ← KEIN direkter Zugriff von außen →                     │
-└──────────────────────────────────────────────────────────┘
-                   │ Schulnetz / VLAN
-         ┌─────────┼─────────────┐
-      Schüler   Lehrer   Coding-Tools
+                    ╔══════════════════════════════════════╗
+                    ║         ZID Rechenzentrum            ║
+                    ║                                      ║
+                    ║ ┌─────────┐ ┌─────────┐ ┌─────────┐ ║
+                    ║ │vLLM #1  │ │vLLM #2  │ │vLLM #3  │ ║
+                    ║ └────┬────┘ └────┬────┘ └────┬────┘ ║
+                    ║      │           │           │      ║
+                    ║ ═════╧═══════════╧═══════════╧═══   ║
+                    ║ ← KEIN direkter Zugriff von außen   ║
+                    ║ ═════╤═══════════╤═══════════╤═══   ║
+                    ║      │           │           │      ║
+                    ║ ┌────┴───────────┴───────────┴────┐ ║
+                    ║ │         Management VM            │ ║
+                    ║ │ LiteLLM + Open WebUI + SearXNG  │ ║
+                    ║ └───────────────┬─────────────────┘ ║
+                    ╚═════════════════╬════════════════════╝
+                                      ║
+                                 HTTPS (Schul-SSO / API-Key)
+                                      ║
+              ┌───────────────────────╬───────────────────────┐
+              │                       ║                       │
+              │                 Schulnetz / VLAN                │
+              │                       ║                       │
+         ┌────┴────┐           ┌──────┴──────┐          ┌────┴────┐
+         │ Schüler │           │    Lehrer    │          │ Coding- │
+         ├─────────┤           ├──────────────┤          │  Tools  │
+         │ Browser │           │   Browser    │          ├─────────┤
+         │Coding-T.│           │  Coding-T.   │          │API-Key  │
+         └─────────┘           └──────────────┘          └─────────┘
 ```
 
 ## Software-Stack

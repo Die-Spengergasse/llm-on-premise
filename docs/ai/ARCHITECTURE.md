@@ -4,11 +4,42 @@ Living structural map of the system as of 2026-05-22.
 
 ## Overview
 
-On-premise LLM-Infrastruktur für die Spengergasse. Eine Management-VM
-(LiteLLM, Open WebUI, SearXNG) im ZID-Rechenzentrum dient als einziger
-öffentlicher Einstiegspunkt. AI-Backend-Knoten (vLLM) laufen in einem
-isolierten VLAN. Schüler und Lehrer greifen über Browser oder Coding-Tools
-zu, authentifiziert über Schul-SSO.
+On-premise LLM-Infrastruktur für die Spengergasse. Die Management-VM
+(LiteLLM, Open WebUI, SearXNG) ist der einzige Einstiegspunkt für
+Clients aus dem Schulnetz. AI-Backend-Knoten (vLLM) laufen isoliert
+und sind ausschließlich über die Management-VM erreichbar.
+
+```
+                    ╔══════════════════════════════════════╗
+                    ║         ZID Rechenzentrum            ║
+                    ║                                      ║
+                    ║ ┌─────────┐ ┌─────────┐ ┌─────────┐ ║
+                    ║ │vLLM #1  │ │vLLM #2  │ │vLLM #3  │ ║
+                    ║ └────┬────┘ └────┬────┘ └────┬────┘ ║
+                    ║      │           │           │      ║
+                    ║ ═════╧═══════════╧═══════════╧═══   ║
+                    ║ ← KEIN direkter Zugriff von außen   ║
+                    ║ ═════╤═══════════╤═══════════╤═══   ║
+                    ║      │           │           │      ║
+                    ║ ┌────┴───────────┴───────────┴────┐ ║
+                    ║ │         Management VM            │ ║
+                    ║ │ LiteLLM + Open WebUI + SearXNG  │ ║
+                    ║ └───────────────┬─────────────────┘ ║
+                    ╚═════════════════╬════════════════════╝
+                                      ║
+                                 HTTPS (Schul-SSO / API-Key)
+                                      ║
+              ┌───────────────────────╬───────────────────────┐
+              │                       ║                       │
+              │                 Schulnetz / VLAN                │
+              │                       ║                       │
+         ┌────┴────┐           ┌──────┴──────┐          ┌────┴────┐
+         │ Schüler │           │    Lehrer    │          │ Coding- │
+         ├─────────┤           ├──────────────┤          │  Tools  │
+         │ Browser │           │   Browser    │          ├─────────┤
+         │Coding-T.│           │  Coding-T.   │          │API-Key  │
+         └─────────┘           └──────────────┘          └─────────┘
+```
 
 ## Knowledge Files (`docs/ai/`)
 
