@@ -13,14 +13,17 @@
 ## Preise (Stand 2026-06-24)
 
 ### Hardware Einmalig
-| Gerät | Speicher | Preis |
-|-------|----------|-------|
-| AMD Strix Halo Mini PC | 96 GB unified | ab $1.479 |
-| Mac Mini M4 Pro | 48 GB unified | $1.799 |
-| Mac Mini M4 Pro | 64 GB unified | ~$2.000 |
-| AMD Strix Halo Dev Kit | 128 GB unified | $3.999 |
-| NVIDIA DGX Spark | 128 GB unified | ~€4.950 |
-| 4× Mac Mini Pro (EXO-Cluster) | 192 GB pooled | ~$7.200 |
+| Gerät | Speicher | Bandbreite | Preis |
+|-------|----------|-----------|-------|
+| AMD Strix Halo Mini PC | 96 GB unified | ~256 GB/s | ab $1.479 |
+| Mac Mini M4 Pro | 48 GB unified | 273 GB/s | $1.799 |
+| Mac Mini M4 Pro | 64 GB unified | 273 GB/s | ~$2.000 |
+| Mac Studio M4 Max | 128 GB unified | 400–546 GB/s | ~€4.500 |
+| Mac Studio M3 Ultra | 96 GB unified | 800 GB/s | ~€4.300 |
+| Mac Studio M3 Ultra | 192 GB unified | 800 GB/s | ~€7.000 |
+| AMD Strix Halo Dev Kit | 128 GB unified | ~256 GB/s | $3.999 |
+| NVIDIA DGX Spark | 128 GB unified | 273 GB/s | ~€4.950 |
+| 4× Mac Mini Pro (EXO) | 192 GB pooled | ~273 GB/s | ~$7.200 |
 
 ### GPU-Miete (laufend)
 | Anbieter | GPU | Preis |
@@ -52,6 +55,16 @@
 | ChatGPT Enterprise | $60-80/Sitz/Monat | ab 150 Sitzen |
 | Anthropic Claude for Education | individuell | API-Credits, Campus Ambassadors |
 | OpenRouter | +5.5 % Aufschlag | 500+ Modelle, ein API-Key |
+
+### Modelle auf Hardware (On-Premise, Stand 2026-06-24)
+
+| Hardware | Läuft z.B. (Open Source) | Kern-Benchmarks |
+|----------|--------------------------|-----------------|
+| Mac Mini Pro 48 GB / Strix Halo 96 GB | Qwen 3.6-27B, MiniMax M3, Gemma 4 31B | SWE-bench V 77–80, TB 59, LiveCodeBench 80 |
+| Mac Studio M4 Max 128 GB | GLM-5.2 (Q4), DeepSeek V4 Flash, Qwen 3.5 397B | SWE-bench Pro 62, GPQA 88, LiveCodeBench 94 |
+| Mac Studio M3 Ultra 192 GB | GLM-5.2, DeepSeek V4 Pro, DeepSeek V4 Flash | SWE-bench V 81, LiveCodeBench 94, AIME 99 |
+| GPU-Miete: H100 (80-96GB) | DeepSeek V4 Pro, GLM-5.2, Qwen 3.5 397B | SWE-bench V 81, SWE-bench Pro 62, GPQA 88 |
+| GPU-Miete: RTX 4090 (24GB) | Qwen 3.6-27B (Q4), DeepSeek V4 Flash | SWE-bench V 77, TB 59 |
 
 ### OpenAI Codex (Coding-Agent)
 | Plan | Kosten | Details |

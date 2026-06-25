@@ -77,8 +77,8 @@ Georg Graf · 2026-06-24
 
 **2.600 Schüler · 280 Lehrer · 97 Klassen**
 
-Davon ~2/3 in IT/Design-Abteilungen: ~1.700 potenzielle KI-Nutzer.
-Davon aktiv (tägliche Nutzung): ~680.
+Davon ~1.700 in IT/Design (potenzielle KI-Nutzer).
+Aktive tägliche Nutzung: ~680 (40 %).
 
 DSGVO als Grundanforderung.
 
@@ -144,6 +144,9 @@ Management-VM (LiteLLM + Open WebUI + SearXNG) + GPU-Knoten (vLLM)
 | AMD Strix Halo Mini PC | 96 GB unified | ab $1.479 |
 | Mac Mini M4 Pro | 48 GB unified | $1.799 |
 | Mac Mini M4 Pro | 64 GB unified | ~$2.000 |
+| Mac Studio M4 Max | 128 GB unified | ~€4.500 |
+| Mac Studio M3 Ultra | 96 GB unified | ~€4.300 |
+| Mac Studio M3 Ultra | 192 GB unified | ~€7.000 |
 | AMD Strix Halo Dev Kit | 128 GB unified | $3.999 |
 | NVIDIA DGX Spark | 128 GB unified | ~€4.950 |
 | 4× Mac Mini Pro (EXO) | 192 GB pooled | ~$7.200 |
@@ -153,6 +156,24 @@ Management-VM (LiteLLM + Open WebUI + SearXNG) + GPU-Knoten (vLLM)
 ---
 
 <!-- 7 -->
+## Open Source Modelle & Hardware
+
+| Hardware | Läuft z.B. | Kern-Benchmarks |
+|----------|------------|-----------------|
+| Mac Mini Pro 48 GB / Strix Halo 96 GB | Qwen 3.6-27B, MiniMax M3, Gemma 4 31B | SWE-bench V 77–80, TB 59, LiveCode 80 |
+| Mac Studio M4 Max 128 GB | GLM-5.2 (Q4), DeepSeek V4 Flash, Qwen 3.5 397B | SWE-bench Pr 62, GPQA 88, LiveCode 94 |
+| Mac Studio M3 Ultra 192 GB | GLM-5.2, DeepSeek V4 Pro, DeepSeek V4 Flash | SWE-bench V 81, LiveCode 94, AIME 99 |
+
+**Zum Vergleich (Closed Source):**
+- Claude Opus 4.8: SWE-bench V 88.6, TB 85.0
+- GPT-5.5: SWE-bench Pr 58.6
+- Claude Opus 4.6: SWE-bench V 80.8
+
+<div class="dim">Auf LiveCodeBench führt DeepSeek V4 Pro alle geschlossenen Modelle an (93.5).</div>
+
+---
+
+<!-- 8 -->
 ## Option A: Kosten
 
 | Szenario | Jahr 1 | Jahr 2 | Jahr 3 |
@@ -165,31 +186,31 @@ Management-VM (LiteLLM + Open WebUI + SearXNG) + GPU-Knoten (vLLM)
 
 ---
 
-<!-- 8 -->
+<!-- 9 -->
 ## Option B: GPU mieten
 
 **EU-souverän – kein CLOUD Act:**
 
-| Anbieter | GPU | Preis |
-|----------|-----|-------|
-| Hetzner GEX44 | RTX 4000 Ada 20 GB | €184/Monat |
-| Hetzner GEX131 | RTX PRO 6000 96 GB | €889/Monat |
-| OVHcloud | H100 | ~$3.20/h |
-| Gcore | H100 | ~$3.10/h |
+| Anbieter | GPU | Preis | Läuft z.B. |
+|----------|-----|-------|------------|
+| Hetzner GEX44 | RTX 4000 Ada 20 GB | €184/Monat | Qwen 3.6-27B, Gemma 4 31B |
+| Hetzner GEX131 | RTX PRO 6000 96 GB | €889/Monat | DeepSeek V4 Flash, GLM-5.2 (Q4) |
+| OVHcloud | H100 | ~$3.20/h | DeepSeek V4 Pro, GLM-5.2 |
+| Gcore | H100 | ~$3.10/h | DeepSeek V4 Pro, GLM-5.2 |
 
 **Neo-Clouds (günstiger, global):**
 
-| Anbieter | GPU | Preis |
-|----------|-----|-------|
-| Spheron | H100 spot | ab $1.03/h |
-| Vast.ai | RTX 4090 | ab $0.35/h |
-| Lambda | H100 | $2.49/h |
+| Anbieter | GPU | Preis | Läuft z.B. |
+|----------|-----|-------|------------|
+| Spheron | H100 spot | ab $1.03/h | DeepSeek V4 Pro |
+| Vast.ai | RTX 4090 | ab $0.35/h | Qwen 3.6-27B, DeepSeek V4 Flash |
+| Lambda | H100 | $2.49/h | DeepSeek V4 Pro, GLM-5.2 |
 
 <div class="dim">Hyperscaler (AWS, Azure, GCP): H100 ~$12–14/h. Preise Stand 2026-06-24.</div>
 
 ---
 
-<!-- 9 -->
+<!-- 10 -->
 ## Option C: API-Abos
 
 **Realistisches Szenario:** 680 aktive Nutzer, 5.000 Tokens/Tag, 190 Schultage
@@ -207,7 +228,7 @@ Management-VM (LiteLLM + Open WebUI + SearXNG) + GPU-Knoten (vLLM)
 
 ---
 
-<!-- 10 -->
+<!-- 11 -->
 ## Vergleich
 
 | Kriterium | On-Premise | GPU mieten | API-Abos |
@@ -223,7 +244,7 @@ Management-VM (LiteLLM + Open WebUI + SearXNG) + GPU-Knoten (vLLM)
 
 ---
 
-<!-- 11 -->
+<!-- 12 -->
 ## Hardware-Trend
 
 Preis pro Token fällt exponentiell. DRAM-Schock 2025/26 ist temporär.
@@ -240,7 +261,7 @@ Preis pro Token fällt exponentiell. DRAM-Schock 2025/26 ist temporär.
 
 ---
 
-<!-- 12 -->
+<!-- 13 -->
 ## Ein möglicher Weg
 
 **Phase 1 (2026/27):**
@@ -260,7 +281,7 @@ Modelle von 2028 auf Hardware von 2026.
 
 ---
 
-<!-- 13 -->
+<!-- 14 -->
 ## Nächste Schritte
 
 - Pilotklasse Q3 2026 – 1 Knoten + API
@@ -270,7 +291,7 @@ Modelle von 2028 auf Hardware von 2026.
 
 ---
 
-<!-- 14 -->
+<!-- 15 -->
 ## Danke
 
 Georg Graf · grafg@spengergasse.at
