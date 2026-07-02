@@ -15,6 +15,7 @@ Eröffnungskonferenz-Präsentation erstellt (docs/praesentation/slides.md, 4 Fol
 - [x] Power-Fix für Dual-8-Pin RTX 2070 entschieden: 6→8 Pin PCIe-Adapter am zweiten VX550-Strang (Issue #12)
 - [x] ZID-Präsentation (2026-06-24) archiviert nach docs/praesentation/archiv/2026-06-24-zid-pitch/
 - [x] Eröffnungskonferenz-Präsentation erstellt: docs/praesentation/slides.md (4 Folien, Bird's-Eye, HTML + PDF gerendert; Chromium via /snap/bin/chromium)
+- [x] GitHub Pages aktiviert (source=Actions) + Workflow .github/workflows/deploy-pages.yml → https://die-spengergasse.github.io/llm-on-premise/
 
 ## Pending
 - [ ] Hardware-Entscheidung (Issues #2, #5, #7)

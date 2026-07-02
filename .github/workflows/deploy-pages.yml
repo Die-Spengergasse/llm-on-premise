@@ -1,0 +1,137 @@
+name: Deploy presentation to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/praesentation/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble Pages site
+        run: |
+          set -euo pipefail
+          mkdir -p public
+          # Disable Jekyll processing so all files are served as-is.
+          touch public/.nojekyll
+
+          # Current deck (Eröffnungskonferenz).
+          cp docs/praesentation/slides.html public/slides.html
+          cp docs/praesentation/slides.pdf  public/slides.pdf
+
+          # Archived deck (ZID-Pitch 2026-06-24).
+          mkdir -p public/archiv/2026-06-24-zid-pitch
+          cp docs/praesentation/archiv/2026-06-24-zid-pitch/slides.html public/archiv/2026-06-24-zid-pitch/slides.html
+          cp docs/praesentation/archiv/2026-06-24-zid-pitch/slides.pdf  public/archiv/2026-06-24-zid-pitch/slides.pdf
+
+      - name: Generate landing page
+        run: |
+          set -euo pipefail
+          cat > public/index.html <<'HTML'
+          <!DOCTYPE html>
+          <html lang="de">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>KI-Infrastruktur Spengergasse — Präsentationen</title>
+            <style>
+              :root { --blue:#2563eb; --ink:#1a1a1a; --muted:#6b7280; --bg:#f8fafc; }
+              * { box-sizing: border-box; }
+              body {
+                margin: 0; padding: 48px 20px;
+                font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+                color: var(--ink); background: var(--bg);
+                line-height: 1.5;
+              }
+              .wrap { max-width: 760px; margin: 0 auto; }
+              header { border-bottom: 2px solid var(--blue); padding-bottom: 16px; margin-bottom: 28px; }
+              h1 { color: var(--blue); font-size: 1.8em; margin: 0 0 6px; }
+              .sub { color: var(--muted); font-size: 0.95em; }
+              .card {
+                background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+                padding: 20px 24px; margin: 16px 0;
+              }
+              .card.current { border-left: 5px solid var(--blue); }
+              .card h2 { margin: 0 0 4px; font-size: 1.2em; }
+              .meta { color: var(--muted); font-size: 0.85em; margin-bottom: 12px; }
+              .p { color: var(--muted); font-size: 0.9em; margin: 4px 0 12px; }
+              a.btn {
+                display: inline-block; text-decoration: none; font-weight: 600; font-size: 0.9em;
+                padding: 8px 16px; border-radius: 6px; margin-right: 8px; transition: opacity .15s;
+              }
+              a.btn:hover { opacity: .85; }
+              a.btn.view { background: var(--blue); color: #fff; }
+              a.btn.dl   { background: #e5e7eb; color: var(--ink); }
+              footer { color: var(--muted); font-size: 0.8em; margin-top: 32px; text-align: center; }
+              .badge {
+                display:inline-block; background:#dcfce7; color:#166534;
+                font-size:.72em; font-weight:600; padding:2px 8px; border-radius:999px; margin-left:8px; vertical-align:middle;
+              }
+              .badge.arch { background:#f1f5f9; color:#475569; }
+            </style>
+          </head>
+          <body>
+            <div class="wrap">
+              <header>
+                <h1>KI-Infrastruktur Spengergasse</h1>
+                <div class="sub">Präsentationen · On-Premise LLM-Projekt</div>
+              </header>
+
+              <div class="card current">
+                <h2>Eröffnungskonferenz <span class="badge">aktuell</span></h2>
+                <div class="meta">High-Level / Bird's-Eye · Chancengleichheit, Autonomie, Hybridmodell</div>
+                <div class="p">Kurze nicht-technische Übersicht: Zweck des Projekts, hybrider Ansatz aus eigener Hardware, Token-Kontingenten und gemieteter Rechenleistung, sowie aktueller Status.</div>
+                <a class="btn view" href="slides.html">Als Folien ansehen</a>
+                <a class="btn dl" href="slides.pdf">PDF herunterladen</a>
+              </div>
+
+              <div class="card">
+                <h2>ZID-Pitch <span class="badge arch">archiviert · 2026-06-24</span></h2>
+                <div class="meta">Detaillierte technische Vorlage: Benchmarks, Preise, Hardware-Optionen, Phasen-Strategie</div>
+                <div class="p">Die ausführliche Präsentation mit Open-Source-vs.-Closed-Source-Vergleich, Kostenmodellen und Hardware-Empfehlungen.</div>
+                <a class="btn view" href="archiv/2026-06-24-zid-pitch/slides.html">Als Folien ansehen</a>
+                <a class="btn dl" href="archiv/2026-06-24-zid-pitch/slides.pdf">PDF herunterladen</a>
+              </div>
+
+              <footer>
+                Georg Graf · grafg@spengergasse.at ·
+                <a href="https://github.com/Die-Spengergasse/llm-on-premise">github.com/Die-Spengergasse/llm-on-premise</a>
+              </footer>
+            </div>
+          </body>
+          </html>
+          HTML
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -93,5 +93,6 @@ Zugriff über **OpenAI-kompatible API** von LiteLLM:
 
 ## Links
 
+- 🌐 **[Präsentationen](https://die-spengergasse.github.io/llm-on-premise/)** — Eröffnungskonferenz & ZID-Pitch
 - [GitHub Issues](https://github.com/Die-Spengergasse/llm-on-premise/issues)
 - [Diskussionen](https://github.com/Die-Spengergasse/llm-on-premise/discussions)
