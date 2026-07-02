@@ -12,6 +12,8 @@
 | 2026-06-24 | Phasen-Strategie: Phase 1 (2026/27) API-lastig, Phase 2 (2027/28) HW-Nachkauf bei fallenden Preisen, Phase 3 (2028+) autark | Beschlossen |
 | 2026-06-24 | Hardware-Favoriten: Apple Mac Mini Pro + AMD Strix Halo (DGX Spark durch Preiserhöhung €4.950 zu teuer für den Einstieg) | Beschlossen |
 | 2026-06-24 | Hybrid-Ansatz: On-Premise für DSGVO-kritische Daten, API (DeepSeek/SiliconFlow) für Massenlast | Beschlossen |
+| 2026-07-02 | RTX 2070-Host (dev-rig-01) als Dev/Test-Rig, nicht als vLLM-Backend (8 GB VRAM zu klein für Zielmodelle GLM-5.2/DeepSeek V4/Qwen 3.6) | Beschlossen |
+| 2026-07-02 | Power-Fix dev-rig-01: 6→8 Pin PCIe-Adapter am zweiten VX550-Strang; kein Y-Splitter (Überlastungsgefahr) | Beschlossen |
 
 ## In Evaluierung
 
