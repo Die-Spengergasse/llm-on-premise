@@ -1,7 +1,7 @@
 # STATE — llm-on-premise
 
 ## Current Focus
-Dev/Test-Host (RTX 2070, dev-rig-01) inventarisiert; Power-Fix (6→8 Pin PCIe-Adapter) entschieden und in Issue #12 dokumentiert.
+Eröffnungskonferenz-Präsentation erstellt (docs/praesentation/slides.md, 4 Folien, High-Level). ZID-Pitch vom 2026-06-24 archiviert – Vorschläge dort sehr positiv aufgenommen.
 
 ## Completed (this cycle)
 - [x] Web-Recherche: Aktuelle GPU-Mietpreise, API-Preise, Education-Pläne (Stand Juni 2026)
@@ -13,6 +13,8 @@ Dev/Test-Host (RTX 2070, dev-rig-01) inventarisiert; Power-Fix (6→8 Pin PCIe-A
 - [x] Phasen-Strategie definiert: API 2026 → HW-Nachkauf 2027/28 → autark 2028+
 - [x] Dev/Test-Host inventarisiert (infra/hosts/inventory.md) – RTX 2070/8 GB, Rolle: Experiment-Rig (kein vLLM-Backend)
 - [x] Power-Fix für Dual-8-Pin RTX 2070 entschieden: 6→8 Pin PCIe-Adapter am zweiten VX550-Strang (Issue #12)
+- [x] ZID-Präsentation (2026-06-24) archiviert nach docs/praesentation/archiv/2026-06-24-zid-pitch/
+- [x] Eröffnungskonferenz-Präsentation erstellt: docs/praesentation/slides.md (4 Folien, Bird's-Eye, HTML + PDF gerendert; Chromium via /snap/bin/chromium)
 
 ## Pending
 - [ ] Hardware-Entscheidung (Issues #2, #5, #7)
