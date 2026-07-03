@@ -24,3 +24,4 @@
 - Gemma 4 Family als VIP-Modell — siehe Issue #7
 - Netzwerk-Isolation der Backend-Knoten — siehe Issue #4
 - ROCm vs. CUDA für AMD-Hardware – Strix Halo erfordert ROCm-Kompatibilität mit vLLM
+- Externes KI-Kursangebot (pup-consulting.at) – fachliche Klärung offen — siehe docs/extern/externes-ki-kursangebot.md
