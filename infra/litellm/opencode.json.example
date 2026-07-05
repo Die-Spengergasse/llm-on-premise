@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": "allow",
+  "provider": {
+    "litellm": {
+      "options": {
+        "baseURL": "http://10.8.0.18:11434/v1",
+        "apiKey": "<litellm-virtual-key>"
+      }
+    }
+  }
+}

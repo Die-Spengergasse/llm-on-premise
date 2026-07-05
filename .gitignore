@@ -1,2 +1,6 @@
 SCRATCH.md
 infra/hosts/secrets.local.md
+infra/litellm/.env
+infra/litellm/opencode.json
+infra/litellm/whisper-data/
+infra/litellm/cache/

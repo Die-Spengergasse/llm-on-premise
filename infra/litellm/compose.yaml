@@ -1,0 +1,91 @@
+services:
+  db:
+    image: postgres:16
+    container_name: litellm-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: litellm
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm -d litellm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    container_name: litellm
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    env_file: .env
+    environment:
+      PYTHONPATH: /app
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./single_gpu_guard.py:/app/single_gpu_guard.py:ro
+      - ./data:/app/data
+    command: --config /app/config.yaml --host 0.0.0.0 --port 11434
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:11434/health/liveliness',timeout=5).status==200 else 1)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+
+  models-proxy:
+    image: python:3.12-alpine
+    container_name: litellm-models-proxy
+    restart: unless-stopped
+    ports:
+      - "11436:8000"
+    env_file: .env
+    environment:
+      LITELLM_INTERNAL_URL: http://litellm:11434
+      LITELLM_PROXY_KEY: ${LITELLM_PROXY_KEY}
+      LITELLM_PUBLIC_URL: ${LITELLM_PUBLIC_URL}
+    volumes:
+      - ./models_proxy.py:/app/models_proxy.py:ro
+      - ./cache:/app/cache
+    command: ["python", "/app/models_proxy.py"]
+    depends_on:
+      litellm:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/healthz',timeout=5).status==200 else 1)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  whisper:
+    image: hwdsl2/whisper-server:cuda
+    container_name: whisper
+    restart: unless-stopped
+    ports:
+      - "11437:9000"
+    environment:
+      WHISPER_MODEL: large-v3
+      WHISPER_DEVICE: cuda
+      WHISPER_COMPUTE_TYPE: float16
+      WHISPER_LANGUAGE: de
+      WHISPER_PORT: 9000
+      WHISPER_BEAM: 5
+      WHISPER_LOG_LEVEL: INFO
+      WHISPER_API_KEY: ${WHISPER_API_KEY}
+    volumes:
+      - ./whisper-data:/var/lib/whisper
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

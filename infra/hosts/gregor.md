@@ -24,10 +24,11 @@
 
 ## Runtime role (2026-07-05)
 
-Single-GPU inference + gateway box, all stack config under `/opt/litellm/`
-(portable: `rsync -a /opt/litellm <vm>:` + `docker compose up -d` migrates
-LiteLLM to the future management VM, Issue #3, zero config edits — `api_base`
-resolves to gregor's current WireGuard IP from `secrets.local.md`).
+Single-GPU inference + STT gateway box, all stack config under `/opt/litellm/`.
+**Live configs are backed up in `infra/litellm/` (this repo)** — see the README
+there for the file map. Migration to management VM: `rsync -a /opt/litellm <vm>:`
++ `docker compose up -d`. `api_base` resolves to gregor's current WireGuard IP
+from `secrets.local.md`.
 
 | Service | Port | Bound by | Notes |
 |---|---|---|---|

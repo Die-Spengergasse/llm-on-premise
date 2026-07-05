@@ -1,0 +1,37 @@
+model_list:
+  # Max-context-only catalog: each entry uses its model's architectural max
+  # (e2b/e4b = 128K native; 12b/26b/31b = 256K). 4K-default variants removed.
+  # 12B/12b-it-qat dropped from catalog: 6.36 GB weights + ~4-8 GB KV cache
+  # at 256K >> 1.64 GB free on the 8 GB gregor GPU. Blob kept on disk for
+  # future >8 GB hardware (Issues #2/#5/#7).
+  - model_name: gemma4:e2b-128k
+    litellm_params:
+      model: ollama/gemma4:e2b-128k
+      api_base: http://10.8.0.18:11435
+      num_retries: 0
+  - model_name: gemma4:e4b-128k
+    litellm_params:
+      model: ollama/gemma4:e4b-128k
+      api_base: http://10.8.0.18:11435
+      num_retries: 0
+  - model_name: qwen3:8b
+    litellm_params:
+      model: ollama/qwen3:8b
+      api_base: http://10.8.0.18:11435
+      num_retries: 0
+  - model_name: whisper-1
+    litellm_params:
+      model: openai/whisper-1
+      api_base: http://whisper:9000/v1
+      api_key: whisper-sk-gregor-2026
+
+litellm_settings:
+  callbacks:
+    - single_gpu_guard.guard
+  num_retries: 0
+  request_timeout: 600
+  drop_params: true
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
