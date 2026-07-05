@@ -12,16 +12,16 @@ Residency auf der einen GPU, und ein models.dev-Merging-Proxy speist
 die Modellliste dynamisch in opencode ein. Langfristig zieht LiteLLM auf
 die Management-VM (Issue #3) um; das gesamte Stack-Verzeichnis `/opt/litellm`
 ist portabel (`rsync` + `docker compose up`), `api_base` zeigt immer auf
-gregors WireGuard-IP `10.8.0.18` (migriert ohne Config-Edit).
+gregors WireGuard-IP `<WG_IP_GREGOR>` (siehe `infra/hosts/secrets.local.md`; temporär/DHCP — migriert ohne Config-Edit, da kompose/LiteLLM bei gleichem Hostnamen bleibt).
 
 ```
                  ┌─────────────────────────────────────────────┐
    Clients       │  opencode (TUI) / Open WebUI / API-Clients   │
-   (Schulnetz    │  OPENCODE_MODELS_URL=10.8.0.18:11436         │
+   (Schulnetz    │  OPENCODE_MODELS_URL=<WG_IP_GREGOR>:11436     │
     + VPN)       └──────────────────┬──────────────────────────┘
                                          │  :11434  Bearer <virtual-key>
         ┌────────────────────────────────┴───────────────────────────┐
-        │  gregor (10.8.0.18)                                          │
+        │  gregor (<WG_IP_GREGOR>)                                      │
         │                                                              │
         │  ┌─────────────────┐  /v1/chat/completions  ┌──────────────┐ │
         │  │ LiteLLM :11434  │ ───────────────────►  │ ollama :11435│ │
@@ -55,7 +55,7 @@ llm-on-premise/
 ├── docs/ai/              # Wissensbasis (siehe Tabelle unten)
 ├── docs/praesentation/   # Eröffnungskonferenz-Slides + ZID-Archiv
 ├── docs/extern/          # externes Kursangebot etc.
-├── infra/hosts/          # inventory.md (dev-rig-01, gregor)
+├── infra/hosts/          # <hostname>.md per host (gregor.md) + secrets.local.md (git-ignored)
 └── .github/workflows/    # GitHub Pages deploy
 ```
 
@@ -75,9 +75,9 @@ llm-on-premise/
 ## Data Flows
 
 - Schüler/Lehrer → opencode-Picker → `litellm/gemma4:*` → LiteLLM `:11434` (Bearer virtual-key) → SingleGpuGuard (busy→429 / idle→swap) → ollama `:11435` → GPU.
-- opencode model-discovery: Client `GET http://10.8.0.18:11436/api.json` (OPENCODE_MODELS_URL) → models-proxy merged upstream models.dev + `litellm`-Provider (Modelle aus `GET :11434/v1/models`) → Picker; Refresh alle ~60 min.
+- opencode model-discovery: Client `GET http://<WG_IP_GREGOR>:11436/api.json` (OPENCODE_MODELS_URL; IP aus `infra/hosts/secrets.local.md`) → models-proxy merged upstream models.dev + `litellm`-Provider (Modelle aus `GET :11434/v1/models`) → Picker; Refresh alle ~60 min.
 - Neues Modell: `ollama pull` + Eintrag in `/opt/litellm/config.yaml` model_list + `docker compose restart litellm` → models-proxy übernimmt beim nächsten Refresh → Picker ohne Client-Config-Änderung.
-- Migration auf Management-VM (Issue #3): `rsync /opt/litellm <vm>:` + `docker compose up -d`; `api_base` bleibt `http://10.8.0.18:11435`, `OPENCODE_MODELS_URL` bleibt `:11436` (gregor), erreichbar über WireGuard.
+- Migration auf Management-VM (Issue #3): `rsync -a /opt/litellm <vm>:` + `docker compose up -d`; `api_base` bleibt `http://<WG_IP_GREGOR>:11435` (IP aus `infra/hosts/secrets.local.md`), `OPENCODE_MODELS_URL` bleibt `:11436` (gregor), erreichbar über WireGuard.
 
 ## Known Gaps (siehe PITFALLS.md / DECISIONS.md)
 

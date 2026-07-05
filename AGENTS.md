@@ -33,6 +33,10 @@ Before starting any task, read the following files in order:
 5. `docs/ai/PITFALLS.md`
 6. `docs/ai/STATE.md`
 7. `docs/ai/DOMAIN.md` (if task involves business logic)
+8. `infra/hosts/<hostname>.md` (if the task touches a specific host) +
+   `infra/hosts/secrets.local.md` (read for current IPs/MACs/key locations —
+   git-ignored, never commit; IPs are often DHCP/temporary, so reference
+   hosts by NAME in docs and resolve the IP at task time).
 
 If the user says "continue", "resume", or "finish where we left off":
 read and act on HANDOFF.md immediately without asking clarifying questions.

@@ -11,7 +11,7 @@ gregor-Stack live: LiteLLM + Postgres + SingleGpuGuard + models.dev-Proxy in Doc
 - [x] Web-Recherche: Schülernachweis Spengergasse (2.600 Schüler, 280 Lehrer, 97 Klassen)
 - [x] Präsentation in docs/praesentation/slides.md erstellt (HTML + PDF)
 - [x] Phasen-Strategie definiert: API 2026 → HW-Nachkauf 2027/28 → autark 2028+
-- [x] Dev/Test-Host inventarisiert (infra/hosts/inventory.md) – RTX 2070/8 GB, Rolle: Experiment-Rig (kein vLLM-Backend)
+- [x] Dev/Test-Host inventarisiert (infra/hosts/gregor.md) – RTX 2070 SUPER/8 GB; inzwischen Host gregor (interim inference+gateway, s. 2026-07-05)
 - [x] Power-Fix für Dual-8-Pin RTX 2070 entschieden: 6→8 Pin PCIe-Adapter am zweiten VX550-Strang (Issue #12)
 - [x] ZID-Präsentation (2026-06-24) archiviert nach docs/praesentation/archiv/2026-06-24-zid-pitch/
 - [x] Eröffnungskonferenz-Präsentation erstellt: docs/praesentation/slides.md (4 Folien, Bird's-Eye, HTML + PDF)
@@ -30,7 +30,7 @@ gregor-Stack live: LiteLLM + Postgres + SingleGpuGuard + models.dev-Proxy in Doc
 ## Pending
 - [ ] Shell reloaden / opencode neu starten, damit OPENCODE_MODELS_URL + reduzierte Config greifen (läuft noch mit altem Cache)
 - [ ] OPENCODE_MODELS_URL für Schüler-Lab austollen (Shared-Launcher / /etc/profile.d) — aktuell nur georgs Shell
-- [ ] Management-VM aufsetzen (Issue #3) — LiteLLM migriert dann dorthin (rsync /opt/litellm + compose up, api_base bleibt 10.8.0.18)
+- [ ] Management-VM aufsetzen (Issue #3) — LiteLLM migriert dann dorthin (rsync /opt/litellm + compose up, api_base bleibt <WG_IP_GREGOR>; IP siehe `infra/hosts/secrets.local.md`)
 - [ ] Network Hardening / ufw für :11435 (Issue #4) — aktuell Bypass möglich (Known Gap)
 - [ ] Hardware-Entscheidung (Issues #2, #5, #7)
 - [ ] LiteLLM Access Control / Virtual-Keys für User-Groups (Issue #6)
