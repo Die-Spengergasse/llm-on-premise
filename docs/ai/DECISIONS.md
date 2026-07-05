@@ -21,6 +21,7 @@
 | 2026-07-05 | opencode-Modell-Discovery über models.dev-Merging-Proxy (`:11436`, `OPENCODE_MODELS_URL`) statt Fork-Patch/PR (upstream opencode #6231) — behält npm-binary, macht Sync-Skript obsolet. Provider-Id in opencode = `litellm` (nicht `ollama`), opencode.json enthält nur `{ options }`. | Beschlossen |
 | 2026-07-05 | `gemma4:e4b-128k` (e4b-it-qat @128K) als Sweet-Spot für die 8-GB-Mappe; die ~1,4 GB VRAM-Headroom bleiben bewusst als KV-Cache-Puffer für lange Sessions, nicht "verschenkt". 192K/256K abgelehnt — e4b hat 128K nativ (12B/26B/31B haben 256K). | Beschlossen |
 | 2026-07-05 | Firewall-Regeln (ufw) bewusst NICHT umgesetzt — `:11435` (ollama) bleibt direkt erreichbar (Known Gap, Bypass um LiteLLM-Auth möglich); auf Issue #4 verschoben. `:11434` ist Container-Port → ufw kann ihn ohnehin nicht filtern. | Verschoben |
+| 2026-07-05 | LiteLLM-Katalog auf Max-Context-only reduziert: nur `gemma4:e2b-128k` + `gemma4:e4b-128k` (beide 128K = architektonisches Max der e2b/e4b-Varianten). 4K-Default-Varianten (`e2b`, `e4b`, `e4b-it-qat`, `12b`, `12b-it-qat`) aus `config.yaml` `model_list` entfernt — ein Modell mit nur 4K Kontext ist pädagogisch wertlos. 12B/12b-it-qat NICHT auf 256K (sein Max) gesetzt, weil 6,36 GBWeights + ~4–8 GB KV-Cache @256K >> 1,64 GB freie VRAM auf der 8 GB gregor-GPU (OOM oder CPU-KV-Offload = unbrauchbar langsam). 12B-Blobs bleiben auf Disk (kein `ollama rm`), um teure Re-Downloads beim Umstieg auf >8 GB-Hardware (Issues #2/#5/#7) zu sparen. | Beschlossen |
 
 ## In Evaluierung
 

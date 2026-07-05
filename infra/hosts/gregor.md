@@ -42,15 +42,33 @@ resolves to gregor's current WireGuard IP from `secrets.local.md`).
 residency on the one GPU: a different model requested while the resident
 model is busy → HTTP 429 (busy model stays); same model → allowed (serialized
 by ollama's `NUM_PARALLEL=1`); idle → atomic swap. Per-backend (`api_base`)
-state, matched via `litellm_call_id`. See `docs/ai/PITFALLS.md` for the
-implementation gotchas (call_type="acompletion", counter-corruption fix).
+state, matched via `litellm_call_id`. **Self-healing (2026-07-05):** (1)
+staleness reset — a leaked `in_flight` counter (lost callback on aborted
+streams) self-heals after `_STALE_AFTER=660s` (reset+swap instead of 429);
+(2) ollama `/api/ps` reconcile — the guard polls ollama's actually-loaded
+model and adopts it when idle, correcting out-of-band loads (`ollama run`
+on the host, `:11435` bypass). `api_base` is resolved from `config.yaml`
+(pre_call has `litellm_params` still empty). Traces: `ACCEPT/SAME/SWAP/
+REJECT/STALE-RESET/RECONCILE` in `/opt/litellm/data/guard.log`. See
+`docs/ai/PITFALLS.md` for the implementation gotchas.
 
 ### Models (ollama, 2026-07-05)
 
-gemma4 family: `e2b`, `e2b-128k`, `e4b`, `e4b-128k` (= e4b-it-qat @128K,
-sweet spot: ~6.35 GB VRAM, 1.4 GB KV headroom), `e4b-it-qat`, `12b`,
-`12b-it-qat`. Sweet-spot context note: e4b/e2b = 128K native; 256K is 12B+
-only. See `docs/ai/DOMAIN.md`.
+**LiteLLM catalog (`config.yaml` model_list) — max-context-only (2026-07-05):**
+- `gemma4:e2b-128k` (e2b @ 128K = arch max, q4_K_M, 7.16 GB)
+- `gemma4:e4b-128k` (e4b-it-qat @ 128K = arch max, Q4_0, 6.15 GB; sweet spot:
+  ~6.35 GB VRAM, 1.4 GB KV headroom)
+
+4K-default variants (`e2b`, `e4b`, `e4b-it-qat`, `12b`, `12b-it-qat`) removed
+from the catalog — a model at 4K context is pedagogically useless. 12B/12b-it-qat
+NOT set to its 256K max: 6.36 GB weights + ~4–8 GB KV @ 256K >> 1.64 GB free
+VRAM on the 8 GB GPU (OOM or CPU KV-offload = unusably slow). Deferred to
+future >8 GB hardware (Issues #2/#5/#7).
+
+**On-disk ollama tags (blobs retained, no `ollama rm` — avoid re-downloads):**
+gemma4 family: `e2b`, `e2b-128k`, `e4b`, `e4b-it-qat`, `e4b-128k` (= e4b-it-qat
+@128K, sweet spot), `12b`, `12b-it-qat`. Sweet-spot context note: e4b/e2b =
+128K native; 256K is 12B+ only. See `docs/ai/DOMAIN.md`.
 
 ## Power-connector history (from dev-rig-01 inventory)
 

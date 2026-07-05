@@ -1,7 +1,7 @@
 # STATE — llm-on-premise
 
 ## Current Focus
-gregor-Stack live: LiteLLM + Postgres + SingleGpuGuard + models.dev-Proxy in Docker; opencode entdeckt Modelle dynamisch (kein Sync-Skript mehr).
+gregor-Stack live: LiteLLM + Postgres + SingleGpuGuard + models.dev-Proxy in Docker; opencode entdeckt Modelle dynamisch (kein Sync-Skript mehr). SingleGpuGuard 2026-07-05 um Staleness-Self-Heal + ollama-`/api/ps`-Reconcile erweitert (behebt den 429-Forever-Bug durch geleakte in_flight-Counter + Out-of-band-Load-Divergenz).
 
 ## Completed (this cycle)
 - [x] Web-Recherche: Aktuelle GPU-Mietpreise, API-Preise, Education-Pläne (Stand Juni 2026)
@@ -26,6 +26,8 @@ gregor-Stack live: LiteLLM + Postgres + SingleGpuGuard + models.dev-Proxy in Doc
 - [x] opencode.json auf `provider.litellm = { options }` reduziert (kein models/npm/name); opencode.jsonc gelöscht
 - [x] OPENCODE_MODELS_URL in ~/.bash_aliases gesetzt; A/B-Beweis: mit env 7 litellm-Modelle, ohne 0
 - [x] opencode-ollama-sync archiviert (git mv → scripts/archive/) in opencode-helpers-Repo, committed & gepusht
+- [x] SingleGpuGuard 429-Forever-Bug gefixt (2026-07-05): Wurzel = geleakter `in_flight`-Counter (abgebrochene Streaming-Requests feuern kein `async_log_failure_event` → Counter klebt bei >0 → jedes andere Modell bekommt ewig 429). Fix: (a) Staleness-Self-Heal (`_Domain.last_busy_at` + `_STALE_AFTER=660s`, Reset+Swap statt 429 bei stale), (b) ollama-`/api/ps`-Reconcile (pollt ollamas real geladenes Modell, adoptiert es bei `in_flight==0`; korrigiert Out-of-band-Loads via `ollama run`/`:11435`-Bypass), (c) `_domain()` löst `api_base` via `config.yaml`-Map (pre_call hat `litellm_params` noch leer), (d) Traces `ACCEPT/SAME/SWAP/STALE-RESET/RECONCILE` für Observability. E2e verifiziert: idle-swap ✓, busy→429 ✓, stale-self-heal ✓ (Abort reproduziert Leak, `STALE-RESET`+`SWAP` nach <660s), reconcile bei out-of-band-Load ✓.
+- [x] LiteLLM-Katalog auf Max-Context-only reduziert (2026-07-05): `config.yaml` `model_list` → nur `gemma4:e2b-128k` + `gemma4:e4b-128k` (beide 128K = e2b/e4b-Max). 5 4K-Default-Varianten entfernt. 12B/12b-it-qat nicht auf 256K gesetzt (6,36 GB Weights + ~4–8 GB KV >> 1,64 GB freie VRAM auf 8 GB gregor → OOM/Offload); Blob bleibt auf Disk für künftige >8 GB-HW (Issues #2/#5/#7). `/v1/models`=2 verifiziert, e4b-128k-Chat OK, Guard `RECONCILE`+`SWAP` OK.
 
 ## Pending
 - [ ] Shell reloaden / opencode neu starten, damit OPENCODE_MODELS_URL + reduzierte Config greifen (läuft noch mit altem Cache)
