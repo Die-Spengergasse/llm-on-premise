@@ -36,6 +36,7 @@ from `secrets.local.md`.
 | LiteLLM (gateway) | `:11434` | Docker (published) | `ghcr.io/berriai/litellm:main-stable`; virtual keys, Postgres-backed (`db` service, internal). ufw cannot filter this port (Docker DOCKER chain). |
 | models.dev merging-proxy | `:11436` | Docker (`python:3.12-alpine`) | injects `litellm` provider into upstream catalog; opencode `OPENCODE_MODELS_URL` points here. |
 | Postgres 16 (LiteLLM DB) | internal | Docker (not published) | `db` service, bundled. LiteLLM `:main-stable` rejects SQLite (fatal). |
+| Open WebUI | `:3000` | Docker (published) | `ghcr.io/open-webui/open-webui:main`; LDAP auth against `ldap.spengergasse.at:636`; STT via whisper-1 through LiteLLM. Mic requires HTTPS — pending (Caddy/nginx). |
 
 ### Custom LiteLLM plugin
 

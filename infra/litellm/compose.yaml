@@ -65,6 +65,29 @@ services:
       retries: 3
       start_period: 10s
 
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    environment:
+      WEBUI_AUTH_TYPE: ldap
+      LDAP_SERVER_HOST: ldap.spengergasse.at
+      LDAP_SERVER_PORT: 636
+      LDAP_USE_SSL: true
+      LDAP_SEARCH_FILTER: (sAMAccountName={{login}})
+      LDAP_BASE_DN: OU=Automatisch gewartete Benutzer,OU=Benutzer,OU=SPG,DC=htl-wien5,DC=schule
+      OPENAI_API_BASE: http://litellm:11434/v1
+      OPENAI_API_KEY: sk-gQrVR8-tgZnxF0Yxm_wo0Q
+      WEBUI_SECRET_KEY: Tb5DkjD86gDSkBQcsurGNTxjAtZ67MRk1+jTPy/sTOw=
+      ENABLE_SIGNUP: false
+    volumes:
+      - ./open-webui-data:/app/backend/data
+    depends_on:
+      litellm:
+        condition: service_healthy
+
   whisper:
     image: hwdsl2/whisper-server:cuda
     container_name: whisper
