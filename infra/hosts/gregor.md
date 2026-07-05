@@ -54,21 +54,31 @@ REJECT/STALE-RESET/RECONCILE` in `/opt/litellm/data/guard.log`. See
 
 ### Models (ollama, 2026-07-05)
 
-**LiteLLM catalog (`config.yaml` model_list) — max-context-only (2026-07-05):**
+**Live in ollama (2 tags, max-context-only):**
 - `gemma4:e2b-128k` (e2b @ 128K = arch max, q4_K_M, 7.16 GB)
 - `gemma4:e4b-128k` (e4b-it-qat @ 128K = arch max, Q4_0, 6.15 GB; sweet spot:
   ~6.35 GB VRAM, 1.4 GB KV headroom)
 
-4K-default variants (`e2b`, `e4b`, `e4b-it-qat`, `12b`, `12b-it-qat`) removed
-from the catalog — a model at 4K context is pedagogically useless. 12B/12b-it-qat
-NOT set to its 256K max: 6.36 GB weights + ~4–8 GB KV @ 256K >> 1.64 GB free
-VRAM on the 8 GB GPU (OOM or CPU KV-offload = unusably slow). Deferred to
-future >8 GB hardware (Issues #2/#5/#7).
+**Removed from ollama + inventoried (2026-07-05, Session 2):** the 5 4K-default
+variants (`e2b`, `e4b`, `e4b-it-qat`, `12b`, `12b-it-qat`) were `ollama rm`'d
+because they leaked into opencode's picker. Their 11 unique blobs (~22,6 GiB;
+shared weight blobs survived via the kept `-128k` tags) + 5 manifests are in
+**`/opt/litellm/blob-inventory/`** (NOT git; README + `tag-digest-map.json` with
+restore steps). Restore at >8 GB HW (Issues #2/#5/#7): copy blobs+manifests back
+to `~/.ollama/models/` + `systemctl restart ollama`. Sweet-spot context note:
+e4b/e2b = 128K native; 256K is 12B+ only (see `docs/ai/DOMAIN.md`).
 
-**On-disk ollama tags (blobs retained, no `ollama rm` — avoid re-downloads):**
-gemma4 family: `e2b`, `e2b-128k`, `e4b`, `e4b-it-qat`, `e4b-128k` (= e4b-it-qat
-@128K, sweet spot), `12b`, `12b-it-qat`. Sweet-spot context note: e4b/e2b =
-128K native; 256K is 12B+ only. See `docs/ai/DOMAIN.md`.
+**Catalog flow (correction of an earlier wrong belief):** LiteLLM does NOT
+auto-discover ollama tags. The catalog source-of-truth is `config.yaml`
+`model_list` (the 2 entries above), loaded at LiteLLM startup. `/v1/models` is
+**key-scoped** — it returns the requesting virtual key's `models` allowance, not
+the router's. Both gregor keys (`opencode-gregor`, `catalog-proxy`) have
+`models = '{}'` so they inherit the live proxy catalog; do NOT pin a model list
+on them or the picker will go stale again (see `docs/ai/PITFALLS.md`).
+
+**Add a model in future:** `ollama pull <tag>` → add `model_list` entry to
+`/opt/litellm/config.yaml` → `docker compose restart litellm`. No key edit
+needed while keys keep `models = '{}'`.
 
 ## Power-connector history (from dev-rig-01 inventory)
 
