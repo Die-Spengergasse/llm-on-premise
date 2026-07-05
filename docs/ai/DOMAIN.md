@@ -120,3 +120,12 @@
 - ~680 aktive Nutzer (40 % von 1.700 IT-Schülern)
 - 190 Schultage → ~646 Millionen Tokens/Jahr
 - Auth: Schul-SSO + API-Tokens für Coding-Tools
+
+## Gemma-4-Modellfamilie — Kontextlängen (Stand 2026-07-05, Ollama-Registry)
+
+- **e4b / e2b (Effective-Param-Varianten)**: 128K nativ. QAT-Variante: 6,1 GB (Q4_0); q4_K_M: 9,6 GB; q8_0: 12 GB; bf16: 16 GB. `gemma4:latest` == e4b q4_K_M.
+- **12b / 26b / 31b**: 256K nativ.
+- **`gemma4:cloud`**: 256K, gehostet.
+- **Quant-Empfehlung für 8 GB VRAM (gregor)**: e4b-it-qat @128K (`gemma4:e4b-128k`) — belegt ~6,35 GB, 1,4 GB Headroom für KV-Wachstum.
+- **KV-Cache skaliert ~linear mit `num_ctx`**: bei festen Gewichten ist `num_ctx` der primäre Hebel für VRAM-Auslastung, nicht die Quantisierung-Auswahl (solange die Quantisierung in VRAM passt). `num_ctx` über die Trainings-Grenze hinaus → Verfall.
+- **Kein 256K-Versuch auf e4b**: Trainingskontext ist 128K; höhere Werte verschwenden KV-Cache und produzieren Müll. 256K erfordert mindestens 12b.

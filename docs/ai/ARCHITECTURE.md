@@ -1,44 +1,62 @@
 # Architecture
 
-Living structural map of the system as of 2026-05-22.
+Living structural map of the system as of 2026-07-05.
 
 ## Overview
 
-On-premise LLM-Infrastruktur für die Spengergasse. Die Management-VM
-(LiteLLM, Open WebUI, SearXNG) ist der einzige Einstiegspunkt für
-Clients aus dem Schulnetz. AI-Backend-Knoten (vLLM) laufen isoliert
-und sind ausschließlich über die Management-VM erreichbar.
+On-premise LLM-Infrastruktur für die Spengergasse. Aktuell (Übergang)
+auf einem Single-GPU-Host **gregor** (RTX 2070 SUPER, 8 GB VRAM):
+ollama als Inference-Backend, LiteLLM (Docker) als auth+Rate-Limit+Routing-Gateway,
+ein Custom-LiteLLM-Plugin (**SingleGpuGuard**) erzwingt Single-Model-
+Residency auf der einen GPU, und ein models.dev-Merging-Proxy speist
+die Modellliste dynamisch in opencode ein. Langfristig zieht LiteLLM auf
+die Management-VM (Issue #3) um; das gesamte Stack-Verzeichnis `/opt/litellm`
+ist portabel (`rsync` + `docker compose up`), `api_base` zeigt immer auf
+gregors WireGuard-IP `10.8.0.18` (migriert ohne Config-Edit).
 
 ```
-                    ╔══════════════════════════════════════╗
-                    ║         ZID Rechenzentrum            ║
-                    ║                                      ║
-                    ║ ┌─────────┐ ┌─────────┐ ┌─────────┐ ║
-                    ║ │vLLM #1  │ │vLLM #2  │ │vLLM #3  │ ║
-                    ║ └────┬────┘ └────┬────┘ └────┬────┘ ║
-                    ║      │           │           │      ║
-                    ║ ═════╧═══════════╧═══════════╧═══   ║
-                    ║ ← KEIN direkter Zugriff von außen   ║
-                    ║ ═════╤═══════════╤═══════════╤═══   ║
-                    ║      │           │           │      ║
-                    ║ ┌────┴───────────┴───────────┴────┐ ║
-                    ║ │         Management VM            │ ║
-                    ║ │ LiteLLM + Open WebUI + SearXNG  │ ║
-                    ║ └───────────────┬─────────────────┘ ║
-                    ╚═════════════════╬════════════════════╝
-                                       ║
-                                  HTTPS (Schul-SSO / API-Key)
-                                       ║
-               ┌────────────────────────╬───────────────────────┐
-               │                        ║                       │
-          Schulnetz                    VPN                  Internet?
-               │                        │                       │
-          ┌────┴────┐            ┌──────┴──────┐           ┌────┴────┐
-          │ ┌─────┐ │            │   ┌─────┐   │           │ ┌─────┐ │
-          │ │     │ │            │   │     │   │           │ │     │ │
-          │ └──┬──┘ │            │  ┌┴─────┴┐  │           │ └──┬──┘ │
-          │   ───   │            │  └───────┘  │           │   ───   │
-          └─────────┘            └─────────────┘           └─────────┘
+                 ┌─────────────────────────────────────────────┐
+   Clients       │  opencode (TUI) / Open WebUI / API-Clients   │
+   (Schulnetz    │  OPENCODE_MODELS_URL=10.8.0.18:11436         │
+    + VPN)       └──────────────────┬──────────────────────────┘
+                                         │  :11434  Bearer <virtual-key>
+        ┌────────────────────────────────┴───────────────────────────┐
+        │  gregor (10.8.0.18)                                          │
+        │                                                              │
+        │  ┌─────────────────┐  /v1/chat/completions  ┌──────────────┐ │
+        │  │ LiteLLM :11434  │ ───────────────────►  │ ollama :11435│ │
+        │  │ + Postgres 16   │   SingleGpuGuard:      │ MAX_LOADED=  │ │
+        │  │ + catalog-proxy │   busy→429/ idle→swap   │ 1            │ │
+        │  │   Key :11436    │                        │ KEEP_ALIVE=  │ │
+        │  └────────▲────────┘                        │ -1           │
+        │           │ /v1/models                       └──────────────┘ │
+        │           └──────► models-proxy injiziert litellm-Provider   │
+        │                    in upstream models.dev-Katalog           │
+        └──────────────────────────────────────────────────────────────┘
+```
+
+## Komponenten auf gregor (`/opt/litellm/`)
+
+| Datei/Dienst | Zweck |
+|---|---|
+| `compose.yaml` | docker-compose: services litellm + db (Postgres 16) + models-proxy |
+| `config.yaml` | LiteLLM model_list (olllama/* gemma4:*) + litellm_settings.callbacks=[single_gpu_guard.guard] + general_settings (master_key/db_url via env) |
+| `single_gpu_guard.py` | Custom CustomLogger-Plugin: per-backend (api_base) Single-Residency-Regel, litellm_call_id-Matching |
+| `models_proxy.py` | HTTP-Server :8000: GET /api.json = upstream models.dev + litellm-Provider (Modelle aus LiteLLM /v1/models); UA-Fix wg. Cloudflare 403 |
+| `.env` | LITELLM_MASTER_KEY / SALT_KEY / POSTGRES_PASSWORD / DATABASE_URL / LITELLM_PROXY_KEY / LITELLM_PUBLIC_URL |
+| `pgdata/` | bind-mount Postgres-Daten (portabel) |
+| `data/` | LiteLLM guard.log etc. |
+| `cache/` | Proxy-Disk-Cache (upstream.json / merged.json / litellm_models.json) — Resilienz bei Proxy/Upstream-Ausfall |
+
+## Directory-Struktur (Repository)
+
+```
+llm-on-premise/
+├── docs/ai/              # Wissensbasis (siehe Tabelle unten)
+├── docs/praesentation/   # Eröffnungskonferenz-Slides + ZID-Archiv
+├── docs/extern/          # externes Kursangebot etc.
+├── infra/hosts/          # inventory.md (dev-rig-01, gregor)
+└── .github/workflows/    # GitHub Pages deploy
 ```
 
 ## Knowledge Files (`docs/ai/`)
@@ -46,15 +64,22 @@ und sind ausschließlich über die Management-VM erreichbar.
 | File | Purpose | Update mode |
 |------|---------|-------------|
 | HANDOFF.md | Offene Aufgaben für nächste Sitzung | Overwrite |
-| DECISIONS.md | Chronologische Aufzeichnung von Entscheidungen | Append |
+| DECISIONS.md | Aktive Entscheidungen | Append; superseded → HISTORY.md |
 | ARCHITECTURE.md | Living structural map | Overwrite |
 | CONVENTIONS.md | Laufende Regeln zur Befolgung | Append |
 | PITFALLS.md | Fallstricke und nicht-offensichtliche Fehler | Append |
-| DOMAIN.md | Schulische/Bildungs-Domänenregeln | Append |
+| DOMAIN.md | Domänenregeln (Schule + Modell-Spezifika) | Append |
 | STATE.md | Aktueller Projektstatus | Overwrite |
+| HISTORY.md | Archiv superseded Einträge (append-only) | Append-only |
 
 ## Data Flows
 
-- Schüler/Lehrer → Browser/IDE → Open WebUI / Direct API → LiteLLM Proxy → vLLM Backend → SearXNG (Tool Use)
-- Auth: Schul-SSO → LiteLLM JWT → API-Token für Coding-Tools
-- Management-VM ↔ Backend-Knoten: interner API-Call über VLAN (kein direkter Zugriff von außen)
+- Schüler/Lehrer → opencode-Picker → `litellm/gemma4:*` → LiteLLM `:11434` (Bearer virtual-key) → SingleGpuGuard (busy→429 / idle→swap) → ollama `:11435` → GPU.
+- opencode model-discovery: Client `GET http://10.8.0.18:11436/api.json` (OPENCODE_MODELS_URL) → models-proxy merged upstream models.dev + `litellm`-Provider (Modelle aus `GET :11434/v1/models`) → Picker; Refresh alle ~60 min.
+- Neues Modell: `ollama pull` + Eintrag in `/opt/litellm/config.yaml` model_list + `docker compose restart litellm` → models-proxy übernimmt beim nächsten Refresh → Picker ohne Client-Config-Änderung.
+- Migration auf Management-VM (Issue #3): `rsync /opt/litellm <vm>:` + `docker compose up -d`; `api_base` bleibt `http://10.8.0.18:11435`, `OPENCODE_MODELS_URL` bleibt `:11436` (gregor), erreichbar über WireGuard.
+
+## Known Gaps (siehe PITFALLS.md / DECISIONS.md)
+
+- Kein ufw: `:11435` (ollama) direkt erreichbar → Bypass um LiteLLM-Auth möglich (Issue #4).
+- `OPENCODE_MODELS_URL` aktuell nur in georgs `~/.bash_aliases` — Schüler noch nicht versorgt.
