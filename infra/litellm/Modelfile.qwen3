@@ -1,0 +1,10 @@
+FROM qwen3:1.7b
+
+PARAMETER temperature 0.5
+PARAMETER top_p 0.85
+PARAMETER top_k 40
+PARAMETER repeat_penalty 1.08
+PARAMETER min_p 0.05
+PARAMETER num_ctx 24576
+
+SYSTEM """You are a precise, helpful assistant. Answer concisely and accurately in the language of the user's question. Do NOT use any tools or functions. Respond only in plain text. When unsure, state your uncertainty."""

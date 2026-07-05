@@ -1,0 +1,18 @@
+[Unit]
+Description=Ollama Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/ollama serve
+User=georg
+Group=georg
+Restart=always
+RestartSec=3
+Environment="OLLAMA_HOST=0.0.0.0:11435"
+Environment="OLLAMA_KEEP_ALIVE=-1"
+Environment="OLLAMA_MAX_LOADED_MODELS=1"
+Environment="OLLAMA_FLASH_ATTENTION=1"
+Environment="OLLAMA_KV_CACHE_TYPE=q8_0"
+
+[Install]
+WantedBy=multi-user.target

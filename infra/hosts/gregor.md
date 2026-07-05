@@ -31,8 +31,8 @@ there for the file map. Migration to management VM: `rsync -a /opt/litellm <vm>:
 from `secrets.local.md`.
 
 | Service | Port | Bound by | Notes |
-|---|---|---|---|
-| ollama (backend) | `:11435` | host systemd (`OLLAMA_HOST=0.0.0.0:11435`) | `MAX_LOADED_MODELS=1`, `KEEP_ALIVE=-1`, `FLASH_ATTENTION=1`. **Known gap:** no ufw — directly reachable, bypasses LiteLLM auth (Issue #4). |
+|---|---|---|---|---|
+| ollama (backend) | `:11435` | host systemd (`OLLAMA_HOST=0.0.0.0:11435`) | `MAX_LOADED_MODELS=1`, `KEEP_ALIVE=-1`, `FLASH_ATTENTION=1`, `OLLAMA_KV_CACHE_TYPE=q8_0`. **Known gap:** no ufw — directly reachable, bypasses LiteLLM auth (Issue #4). |
 | LiteLLM (gateway) | `:11434` | Docker (published) | `ghcr.io/berriai/litellm:main-stable`; virtual keys, Postgres-backed (`db` service, internal). ufw cannot filter this port (Docker DOCKER chain). |
 | models.dev merging-proxy | `:11436` | Docker (`python:3.12-alpine`) | injects `litellm` provider into upstream catalog; opencode `OPENCODE_MODELS_URL` points here. |
 | Postgres 16 (LiteLLM DB) | internal | Docker (not published) | `db` service, bundled. LiteLLM `:main-stable` rejects SQLite (fatal). |
@@ -56,10 +56,10 @@ REJECT/STALE-RESET/RECONCILE` in `/opt/litellm/data/guard.log`. See
 
 ### Models (ollama, 2026-07-05)
 
-**Live in ollama (2 tags, max-context-only):**
-- `gemma4:e2b-128k` (e2b @ 128K = arch max, q4_K_M, 7.16 GB)
-- `gemma4:e4b-128k` (e4b-it-qat @ 128K = arch max, Q4_0, 6.15 GB; sweet spot:
-  ~6.35 GB VRAM, 1.4 GB KV headroom)
+**Live in ollama (1 tag):**
+- `qwen3:4b` — backed by **qwen3:1.7b** (getaggt via Modelfile), 24K context, 100% GPU.
+  Parameters: temperature=0.5, top_p=0.85, top_k=40, min_p=0.05, repeat_penalty=1.08.
+  Modelfile in `infra/litellm/Modelfile.qwen3`.
 
 **Removed from ollama + inventoried (2026-07-05, Session 2):** the 5 4K-default
 variants (`e2b`, `e4b`, `e4b-it-qat`, `12b`, `12b-it-qat`) were `ollama rm`'d
