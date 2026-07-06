@@ -59,30 +59,33 @@ Mit LiteLLM: Ollama → LiteLLM → Open WebUI (3 Hops, aber Guard + Auth + Rout
 
 ## Komponenten auf gregor (`/opt/litellm/`)
 
-| Datei/Dienst | Zweck |
-|---|---|
-| `compose.yaml` | docker-compose: services litellm + db (Postgres 16) + models-proxy + open-webui + whisper |
-| `config.yaml` | LiteLLM Framework-Settings (callbacks, request_timeout, master_key/db_url via env). `model_list` leer — Modelle in Postgres DB (`store_model_in_db=true`) |
-| `single_gpu_guard.py` | Custom CustomLogger-Plugin: per-backend (api_base) Single-Residency-Regel, litellm_call_id-Matching |
-| `models_proxy.py` | HTTP-Server :8000: GET /api.json = upstream models.dev + litellm-Provider (Modelle aus LiteLLM /v1/models); UA-Fix wg. Cloudflare 403 |
-| `open-webui-data/` | Open WebUI SQLite DB (`webui.db`), vector_db, uploads, cache |
-| `.env` | LITELLM_MASTER_KEY / SALT_KEY / POSTGRES_PASSWORD / DATABASE_URL / LITELLM_PROXY_KEY / LITELLM_PUBLIC_URL |
-| `pgdata/` | bind-mount Postgres-Daten (portabel) |
-| `data/` | LiteLLM guard.log etc. |
-| `cache/` | Proxy-Disk-Cache (upstream.json / merged.json / litellm_models.json) — Resilienz bei Proxy/Upstream-Ausfall |
-| `Modelfile.qwen3-1.7b` | Tuned Modelfile: qwen3:1.7b, 24K ctx, konservative Params, "Do NOT use tools" system prompt |
-| `Modelfile.qwen2.5-coder-3b` | Tuned Modelfile: qwen2.5-coder:3b, 24K ctx, "Do NOT use tools" |
-| `Modelfile.llama3.2-3b` | Tuned Modelfile: llama3.2:3b, 24K ctx, "Do NOT use tools" |
-| `ollama.service` | systemd unit: `OLLAMA_KV_CACHE_TYPE=q8_0`, `MAX_LOADED_MODELS=1`, `KEEP_ALIVE=-1`, `FLASH_ATTENTION=1` |
+| Datei/Dienst | Zweck | Repo-Pfad |
+|---|---|---|
+| `compose.yaml` | docker-compose: services litellm + db (Postgres 16) + models-proxy + open-webui + whisper | `litellm/compose.yaml` |
+| `config.yaml` | LiteLLM Framework-Settings (callbacks, request_timeout, master_key/db_url via env). `model_list` leer — Modelle in Postgres DB (`store_model_in_db=true`) | `litellm/config.yaml` |
+| `single_gpu_guard.py` | Custom CustomLogger-Plugin: per-backend (api_base) Single-Residency-Regel, litellm_call_id-Matching | `litellm/single_gpu_guard.py` |
+| `models_proxy.py` | HTTP-Server :8000: GET /api.json = upstream models.dev + litellm-Provider (Modelle aus LiteLLM /v1/models); UA-Fix wg. Cloudflare 403 | `litellm/models_proxy.py` |
+| `open-webui-data/` | Open WebUI SQLite DB (`webui.db`), vector_db, uploads, cache | — (nicht im Repo) |
+| `.env` | LITELLM_MASTER_KEY / SALT_KEY / POSTGRES_PASSWORD / DATABASE_URL / LITELLM_PROXY_KEY / LITELLM_PUBLIC_URL | `litellm/.env.example` (Template) |
+| `pgdata/` | bind-mount Postgres-Daten (portabel) | — (nicht im Repo) |
+| `data/` | LiteLLM guard.log etc. | — (nicht im Repo) |
+| `cache/` | Proxy-Disk-Cache — Resilienz bei Proxy/Upstream-Ausfall | — (nicht im Repo) |
+| Modelfiles | Tuned Modelfiles: qwen3:1.7b, qwen2.5-coder:3b, llama3.2:3b (24K ctx, "Do NOT use tools") | `ollama/Modelfile.*` |
+| `ollama.service` | systemd unit: `OLLAMA_KV_CACHE_TYPE=q8_0`, `MAX_LOADED_MODELS=1`, `KEEP_ALIVE=-1`, `FLASH_ATTENTION=1` | `ollama/ollama.service` |
+| Service-Handbücher | README.md pro Service mit Konfiguration, Kommandos, Troubleshooting | `ollama/`, `litellm/`, `openwebui/`, `whisper/` |
 
 ## Directory-Struktur (Repository)
 
 ```
 llm-on-premise/
-├── docs/ai/              # Wissensbasis (siehe Tabelle unten)
+├── ollama/               # Ollama Handbuch + Modelfiles + systemd unit
+├── litellm/              # LiteLLM Handbuch + compose.yaml + config.yaml + plugins
+├── openwebui/            # Open WebUI Handbuch
+├── whisper/              # Whisper Handbuch
+├── docs/ai/              # Wissensbasis (TIPS, DECISIONS, PITFALLS, etc.)
 ├── docs/praesentation/   # Eröffnungskonferenz-Slides + ZID-Archiv
 ├── docs/extern/          # externes Kursangebot etc.
-├── infra/hosts/          # <hostname>.md per host (gregor.md) + secrets.local.md (git-ignored)
+├── infra/hosts/          # <hostname>.md per host + secrets.local.md (git-ignored)
 └── .github/workflows/    # GitHub Pages deploy
 ```
 
