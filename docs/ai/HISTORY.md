@@ -8,6 +8,11 @@ Entries here are no longer active truth. Never delete from this file.
 - **Origin**: knowledge-persistence skill run by session 2026-07-05.
 - **Reason**: file creation; no prune happened.
 
+## 2026-07-05 (SUPERSEDED 2026-07-05, origin: DECISIONS.md entry 27, reason: superseded by Session 4 — 4B→1.7B swap): qwen3:4b als sole LLM (Session 3)
+- `qwen3:4b` (2,5 GB, 256K native Context) als sole LLM deployt. Alle bisherigen Modelle (gemma4:e2b/e4b-128k, qwen3:8b) aus ollama entfernt und Blobs inventarisiert. `config.yaml` enthielt nur `qwen3:4b` + `whisper-1`. Grund damals: 256K Context + kleines Weight-Footprint (~3 GB VRAM) erlauben Koexistenz mit whisper (~3,9 GB) auf 8 GB GPU.
+- **Origin**: DECISIONS.md
+- **Reason**: Session 4 ersetzte den echten 4B-Modell durch qwen3:1.7b (getaggt als qwen3:4b), reduzierte Context auf 24K mit Q8-KV-Cache, und optimierte Generation-Parameter. Session 4-5 deaktivierten builtin_tools und tool_choice.
+
 ## 2026-07-05 (SUPERSEDED 2026-07-05, origin: infra/hosts/inventory.md, reason: box renamed dev-rig-01 → gregor + repurposed): dev-rig-01 inventory
 - Full original text of `infra/hosts/inventory.md` (deleted 2026-07-05; merged into `infra/hosts/gregor.md`):
   ```

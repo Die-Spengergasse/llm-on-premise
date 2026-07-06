@@ -1,7 +1,7 @@
 # STATE — llm-on-premise
 
 ## Current Focus
-gregor-Stack live: LiteLLM + Postgres + SingleGpuGuard + models.dev-Proxy + whisper + Open WebUI in Docker. **qwen3:1.7b** (getaggt als qwen3:4b, 24K Kontext, 100% GPU) als sole LLM neben **whisper large-v3** (STT) — beide passen mit Headroom auf die 8 GB GPU. **Open WebUI** (:3000) mit LDAP-Auth gegen `ldap.spengergasse.at`, dient als user-facing Chat-Interface. Katalog = 2 Modelle (qwen3:4b, whisper-1). ollama re-enabled. Blob-Inventory `/opt/litellm/blob-inventory/` enthält 24 Blobs (40 GiB) aller 8 gemma4-Tags + qwen3:8b.
+gregor-Stack live: LiteLLM (DB-mode, `store_model_in_db=true`) + Postgres + SingleGpuGuard + models.dev-Proxy + whisper + Open WebUI in Docker. **3 LLM-Modelle** (qwen3:1.7b, qwen2.5-coder:3b, llama3.2:3b) neben **whisper large-v3** (STT) — SingleGpuGuard swappt bei Modellwechsel. **Open WebUI** (:3000) mit LDAP-Auth gegen `ldap.spengergasse.at`, dient als user-facing Chat-Interface. Katalog = 4 Modelle. Alle Models outputen cleanen Text (kein Tool-JSON) dank `base_model_id=NULL`, `builtin_tools=false`, `supports_function_calling=false`, `tool_choice=none`, Modelfile system prompt. ollama re-enabled.
 
 ## Completed (this cycle)
 - [x] Web-Recherche: Aktuelle GPU-Mietpreise, API-Preise, Education-Pläne (Stand Juni 2026)
@@ -33,6 +33,7 @@ gregor-Stack live: LiteLLM + Postgres + SingleGpuGuard + models.dev-Proxy + whis
 - [x] **Open WebUI deployt mit AD LDAP (2026-07-05, Session 3):** Service zu compose.yaml hinzugefügt (`ghcr.io/open-webui/open-webui:main`). LDAP konfiguriert (`ldap.spengergasse.at:636`, search base `OU=Automatisch gewartete Benutzer,…`). Erst-Login via Schul-AD = Admin. Mic-Reparatur: User-Settings hatten `engine=web` (override) → auf `openai` gesetzt mit `api_base_url=http://litellm:11434/v1`. Web-UI auf `:3000`.
 - [x] **Performance-Fix: qwen3:4b → qwen3:1.7b + OLLAMA_KV_CACHE_TYPE=q8_0 (2026-07-05, Session 4):** qwen3:4b (4B) lief zu langsam (59s, 87% GPU). Runtergesetzt auf qwen3:1.7b (getaggt als qwen3:4b, ollama create), OLLAMA_KV_CACHE_TYPE=q8_0 im systemd service. Resultat: 24K Kontext, 100% GPU, ~140 tok/s. Parameters: temperature=0.5, top_p=0.85, top_k=40, min_p=0.05, repeat_penalty=1.08. Modelfile in infra/litellm/Modelfile.qwen3.
 - [x] **Open WebUI Empty-Response-Fix: builtin_tools deaktiviert (2026-07-05, Session 4):** Qwen3's reasoning_content + builtin_tools causing empty responses in Open WebUI. Fix: model capabilities builtin_tools=false, code_interpreter=false, terminal=false, web_search=false, image_generation=false via SQLite. tool_choice=none gesetzt. Provider auf Default zurückgesetzt, think (Ollama)=off. WebUI zeigt nun korrekte Text-Antworten.
+- [x] **SearXNG-Websearch in Open WebUI getestet & revertiert (2026-07-05, Session 5):** SearXNG-Konfiguration (compose.yaml env vars + DB settings) eingerichtet. Erkenntnis: Websearch in Open WebUI v0.10.2 funktioniert ausschließlich als Tool-Call, nicht als automatische Injection. Qwen3 1.7B ruft das tool nicht zuverlässig auf. Config revertiert inkl. DB (web_search=false, tool_choice=none, function_calling entfernt). Wissen in docs/ai/TIPS.md und DECISIONS.md dokumentiert.
 
 ## Pending
 - [x] opencode `OPENCODE_MODELS_URL`-Problem gelöst (2026-07-05): daemonized `opencode serve` erbt nun die Env-Var; Picker zeigt die 2 LiteLLM-Modelle.
@@ -44,6 +45,7 @@ gregor-Stack live: LiteLLM + Postgres + SingleGpuGuard + models.dev-Proxy + whis
 - [ ] LiteLLM Access Control / Virtual-Keys für User-Groups (Issue #6) — kombiniert mit Open WebUI-Rollen (LDAP-Gruppen → LiteLLM-Budgets)
 - [ ] dev-rig-01: Adapter einbauen, PCIe-Stränge prüfen, Specs nachtragen (Issue #12)
 - [ ] HTTPS für Open WebUI (Mic/STT benötigt sicheren Kontext) — Caddy oder nginx als Reverse Proxy vor :3000
+- [ ] Kein Function-Calling mit Qwen3 1.7B (builtin_tools + tool_choice=none blockieren auch Web-Search). Benötigt größeres Modell oder Upgrade von LiteLLM/Ollama für stabilen Tool-Call-Streaming via Open WebUI.
 
 ## Blockers
 - Hardware-Entscheidung
