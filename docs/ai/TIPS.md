@@ -89,14 +89,20 @@ db.commit()
 
 **Locked-down mode (text only, no tools, no thinking):**
 ```json
-{"reasoning_tags": false, "max_tokens": 58579, "think": false, "tool_choice": "none"}
+{"function_calling": "none", "tool_choice": "none", "reasoning_tags": false, "max_tokens": 58579, "think": false}
 ```
 
 **FC enabled, only web_search available:**
 ```json
-{"reasoning_tags": false, "max_tokens": 58579, "think": false, "function_calling": "native"}
+{"function_calling": "native", "max_tokens": 58579}
 ```
 (Also requires `capabilities.web_search=true`, `capabilities.builtin_tools=false`)
+
+**Legacy FC mode (prompt injection instead of native template):**
+```json
+{"function_calling": "legacy", "max_tokens": 58579}
+```
+(Deprecated since v0.10.0, no new features/fixes — but useful for models that hallucinate with native FC)
 
 ## Web Search Configuration (config table)
 
@@ -130,7 +136,27 @@ vars on subsequent restarts. To force env vars:
 
 ## Tool-Call Problems — Root Causes & Fixes
 
-### THE Root Cause: `base_model_id` Must Be NULL, Not Empty String
+### The `function_calling` parameter is the real lever (not `builtin_tools`)
+
+Open WebUI v0.10.0+ defaults `function_calling` to **`native`**. This sends
+the function-calling signal to the model via the Ollama chat template — even
+when `builtin_tools: false` and no tools are registered. The model sees the
+"you can call functions" instruction and hallucinates tool-call JSON like
+`{"name": "write_poem", "arguments": {"content": "..."}}`.
+
+The three modes:
+- **`native`** (default since v0.10.0) — uses the model's native tool-calling
+  template. Small models hallucinate tool calls even without registered tools.
+- **`legacy`** — uses prompt injection instead of native template. Deprecated,
+  still works, no new features/fixes.
+- **`none`** — disables function calling entirely. No tool-calling signal sent.
+
+**Setting `function_calling: "none"` in model params is the primary fix.**
+This stops Open WebUI from signaling the model that it can call functions.
+
+(Source: Open WebUI maintainer Classic298, issue #26823)
+
+### THE Root Cause for SQL-inserted models: `base_model_id` must be NULL
 
 **This is the #1 gotcha.** When inserting model entries into the Open WebUI
 `model` table via SQL, `base_model_id` MUST be `NULL` (None), NOT `''` (empty
@@ -153,7 +179,7 @@ When `base_model_id = ''` (empty string, NOT `None`):
 2. Elif checks if model ID exists in LiteLLM catalog → it does
 3. **`continue`** → custom model entry **silently ignored**
 4. Base model from LiteLLM used **without any capabilities**
-5. `builtin_tools` **defaults to `True`** → builtin tools registered → `{}` / tool JSON
+5. `function_calling` **defaults to `native`** → model hallucinates tool JSON
 
 **Fix:** `UPDATE model SET base_model_id = NULL WHERE base_model_id = '';`
 
@@ -168,7 +194,8 @@ these settings take effect:
 
 **In Open WebUI DB — model params:**
 ```python
-params['tool_choice'] = 'none'      # Don't register tools in API request
+params['function_calling'] = 'none'  # THE key fix: stop native FC signal
+params['tool_choice'] = 'none'       # Belt-and-suspenders: no tools in request
 ```
 
 **In Open WebUI DB — model capabilities:**
@@ -196,12 +223,20 @@ SYSTEM """...Do NOT use any tools or functions. Respond only in plain text..."""
 
 | Model | base_model_id | DB params | Modelfile system prompt |
 |-------|---------------|-----------|------------------------|
-| qwen3:1.7b | NULL ✅ | `tool_choice: "none"`, `reasoning_tags: false`, `think: false` | "Do NOT use any tools or functions" |
-| qwen2.5-coder:3b | NULL (fix!) | `tool_choice: "none"` | "Do NOT use any tools or functions" |
-| llama3.2:3b | NULL (fix!) | `tool_choice: "none"` | "Do NOT use any tools or functions" |
+| qwen3:1.7b | NULL ✅ | `function_calling: "none"`, `tool_choice: "none"`, `reasoning_tags: false`, `think: false` | "Do NOT use any tools or functions" |
+| qwen2.5-coder:3b | NULL (fix!) | `function_calling: "none"`, `tool_choice: "none"` | "Do NOT use any tools or functions" |
+| llama3.2:3b | NULL (fix!) | `function_calling: "none"`, `tool_choice: "none"` | "Do NOT use any tools or functions" |
 
-**`base_model_id = NULL` is the critical fix.** The other settings are
-secondary defenses. Without NULL, all capabilities are silently ignored.
+**Two layers are critical:**
+1. `base_model_id = NULL` — without this, ALL settings are silently ignored
+2. `function_calling = "none"` — without this, the model gets the native FC signal and hallucinates tool calls
+
+### Upstream feedback
+
+Filed as issue [#26823](https://github.com/open-webui/open-webui/issues/26823).
+Closed by maintainer Classic298 with the explanation that `function_calling:
+native` is the intended default (not a bug). The `base_model_id` empty-string
+behavior was not addressed. Issue closed — not worth reopening.
 
 ## `{}` Empty Response Bug (Qwen3 + LiteLLM + Open WebUI)
 
