@@ -34,6 +34,7 @@ gregor-Stack live: LiteLLM (DB-mode, `store_model_in_db=true`) + Postgres + Sing
 - [x] **Performance-Fix: qwen3:4b → qwen3:1.7b + OLLAMA_KV_CACHE_TYPE=q8_0 (2026-07-05, Session 4):** qwen3:4b (4B) lief zu langsam (59s, 87% GPU). Runtergesetzt auf qwen3:1.7b (getaggt als qwen3:4b, ollama create), OLLAMA_KV_CACHE_TYPE=q8_0 im systemd service. Resultat: 24K Kontext, 100% GPU, ~140 tok/s. Parameters: temperature=0.5, top_p=0.85, top_k=40, min_p=0.05, repeat_penalty=1.08. Modelfile in ollama/Modelfile.qwen3-1.7b.
 - [x] **Open WebUI Empty-Response-Fix: builtin_tools deaktiviert (2026-07-05, Session 4):** Qwen3's reasoning_content + builtin_tools causing empty responses in Open WebUI. Fix: model capabilities builtin_tools=false, code_interpreter=false, terminal=false, web_search=false, image_generation=false via SQLite. tool_choice=none gesetzt. Provider auf Default zurückgesetzt, think (Ollama)=off. WebUI zeigt nun korrekte Text-Antworten.
 - [x] **SearXNG-Websearch in Open WebUI getestet & revertiert (2026-07-05, Session 5):** SearXNG-Konfiguration (compose.yaml env vars + DB settings) eingerichtet. Erkenntnis: Websearch in Open WebUI v0.10.2 funktioniert ausschließlich als Tool-Call, nicht als automatische Injection. Qwen3 1.7B ruft das tool nicht zuverlässig auf. Config revertiert inkl. DB (web_search=false, tool_choice=none, function_calling entfernt). Wissen in docs/ai/TIPS.md und DECISIONS.md dokumentiert.
+- [x] **Cortecs-Evaluation + On-Prem-vs-API-Kalkulation (2026-08-13):** Cortecs (Wien, AT) als Tier-1-DSGVO-Provider evaluiert (EU-native Clouds, ISO 27001, DPA, No-Training). Löst China-Datenschutz-Pitfall für DeepSeek/GLM/Kimi. Drei-Szenarien-Kalkulation für 2.600 Schüler erstellt (mittleres Szenario ~325 Mio Tok/Monat, ~€1.800/Jahr via Cortecs). Hardware-Empfehlung: Framework Desktop Strix Halo 128 GB (~€1.850) als On-Prem-Backend. Drei-Säulen-Modell dokumentiert. E-Mail-Entwurf für Cortecs-Anfrage erstellt. Alle docs in `docs/extern/`.
 
 ## Pending
 - [x] opencode `OPENCODE_MODELS_URL`-Problem gelöst (2026-07-05): daemonized `opencode serve` erbt nun die Env-Var; Picker zeigt die 2 LiteLLM-Modelle.
@@ -46,6 +47,9 @@ gregor-Stack live: LiteLLM (DB-mode, `store_model_in_db=true`) + Postgres + Sing
 - [ ] dev-rig-01: Adapter einbauen, PCIe-Stränge prüfen, Specs nachtragen (Issue #12)
 - [ ] HTTPS für Open WebUI (Mic/STT benötigt sicheren Kontext) — Caddy oder nginx als Reverse Proxy vor :3000
 - [ ] Kein Function-Calling mit Qwen3 1.7B (builtin_tools + tool_choice=none blockieren auch Web-Search). Benötigt größeres Modell oder Upgrade von LiteLLM/Ollama für stabilen Tool-Call-Streaming via Open WebUI.
+- [ ] Cortecs-Vertrag anfragen (`docs/extern/cortecs-anfrage-email-draft.md` an `enterprise@cortecs.ai`) — Bildungs-Rabatt, DPA, Modellpreise, 30-Tage-Pilot klären (Issue #14)
+- [ ] Framework Desktop Strix Halo 128 GB bestellen (Issues #2/#5/#7) — On-Prem-Backend für DSGVO-kritische Last + Q3-Modelle
+- [ ] Issue #14 (Token- und Auth-Konzept) mit Cortecs-Volumen + Drei-Säulen-Modell ergänzen
 
 ## Blockers
 - Hardware-Entscheidung

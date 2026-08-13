@@ -9,6 +9,7 @@
 - **Tool Calling Zuverlässigkeit**: Nicht alle Modelle liefern konsistentes Function Calling für SearXNG – evaluieren vor Deployment
 - **Preise veralten schnell**: Hardware- und API-Preise ändern sich monatlich. Alle Preisangaben mit Datum versehen (DOMAIN.md). Stand 2026-06-24 als Referenz notiert.
 - **China-Datenschutz**: DeepSeek, SiliconFlow, Kimi, GLM sind chinesische Anbieter. DSGVO-konformer Betrieb ungeklärt. On-Premise oder EU-Anbieter (Hetzner, OVHcloud, Gcore, Mistral) sind der sichere Weg.
+- **China-Datenschutz — Lösung via EU-Router (2026-08-13)**: Direkt-APIs von DeepSeek/SiliconFlow/Kimi/GLM sind **Tier 4** (nicht DSGVO-konform): Daten auf chinesischen Servern, kein EU-Controller/Zwischenstufe, italienische Garante-Sperre bei DeepSeek. Lösung: EU-Router wie **Cortecs** (Tier 1, Wien, EU-native Clouds Scaleway/OVH/IONOS, ISO 27001, DPA, No-Training) hostet dieselben Modelle EU-souveran. Siehe `docs/extern/cortecs-provider-evaluation.md` für vollständige DSGVO-Tier-Klassifikation (Tier 1: Cortecs, Azure OpenAI; Tier 2: Anthropic/OpenAI/Together/Fireworks; Tier 3: OpenRouter; Tier 4: Direct-China).
 - **ChatGPT Edu-Preis unsicher**: Quellen widersprechen sich ($10/Schüler/Jahr vs. $10/Schüler/Monat). Letzteres angenommen für Berechnungen. Vor Vertrag klären.
 - **GPU-DRAM-Preisschock**: LPDDR5x-Knappheit hat DGX-Spark- und Hetzner-Preise 2025/26 steigen lassen. Temporär, aber aktuell real.
 
