@@ -32,9 +32,14 @@ Ollama → LiteLLM-DB (LiteLLM_ProxyModelTable, store_model_in_db=true)
   `/opt/litellm/.env` (LITELLM_PUBLIC_URL), opencode.json (baseURL),
   bash_aliases (OPENCODE_MODELS_URL) und LiteLLM-DB api_base beim Wechsel:
   alle synchron pflegen, NIE `10.8.0.18` einbauen.
-- lokale SearXNG für opencode-MCP: `SEARX_URL=http://localhost:8888/search`
-  (lokale Instanz auf 127.0.0.1:8888, `/healthz` → 200). Nicht mehr die
-  remote claw-Instanz verwenden.
+- Suchserver ist Gregor selbst auf Port 80 (keine Secrets nötig): nginx `:80`
+  proxyt offen auf SearXNG (`127.0.0.1:8888` bleibt localhost-only). opencode-MCP
+  nutzt `SEARXNG_PRIMARY=http://10.8.0.16`, `SEARXNG_PRIMARY_AUTH=` (leer),
+  `SEARXNG_CHAIN=gregor` (Profil: google → brave → braveapi, kein Free-Tier).
+  Altes `SEARX_URL` wird vom aktuellen Wrapper ignoriert; MCP-`command` muss auf
+  `~/.config/opencode/skills/searxng/scripts/opencode-searxng` zeigen (der
+  Helpers-Repo-Pfad existiert nicht). Verifikation: `curl
+  "http://10.8.0.16/search?q=…&format=json"` → echte Results ohne Auth.
 
 ## Open WebUI Database
 

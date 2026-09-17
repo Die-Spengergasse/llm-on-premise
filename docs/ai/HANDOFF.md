@@ -3,6 +3,10 @@ No pending tasks. Last cleared: 2026-09-17.
 ## Key New File
 - `docs/ai/TIPS.md` — Open WebUI DB operations (model params, capabilities, web search config, `{}` bug fix, SearXNG integration status, models-proxy-Kette/Cache-TTL/10.8.0.18-Pitfall). Read before any future Open WebUI or LiteLLM configuration work.
 
+## Issue #19 — Implemented (2026-09-17, commit pending, open)
+OpenCode-Suche auf Gregor:80 umgestellt, ohne Secrets. Server lief bereits (nginx:80 offen, 56 Test-Results ohne Auth); defekt war nur `opencode.json` (toter Wrapper-Pfad + ignoriertes SEARX_URL). Fix + Verifikation (Pipe + e2e-run) erledigt.
+Folge-Änderungen für nächsten Commit (#19): TIPS (Gregor:80), CONVENTIONS (SEARXNG_PRIMARY-Sync), STATE (Such-Fokus + Completed), HANDOFF (dieser Eintrag).
+
 ## Issue #18 — Evaluated (2026-09-17, committed 921c4a6 + Folge-Commit pending, open)
 Streaming-Tool-Calls via LiteLLM defekt — Upgrade 1.91.0 → 1.101.0 evaluiert, Bug bleibt (Root-Cause: LiteLLM demotiert native ollama-tool_calls-Frames zu Content-Text). Behalten + Digest gepinnt (keine Regression).
 Workaround VERIFIZIERT: Direkt-Provider `ollama-direct` in `~/.config/opencode/opencode.json` (alle 6 Tags, Default `ollama-direct/qwen3:8b`) — e2e-Agent-Run mit Write-Tool erfolgreich. Nicht git-tracked (Heimverzeichnis).
