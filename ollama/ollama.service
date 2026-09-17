@@ -13,6 +13,7 @@ Environment="OLLAMA_KEEP_ALIVE=-1"
 Environment="OLLAMA_MAX_LOADED_MODELS=1"
 Environment="OLLAMA_FLASH_ATTENTION=1"
 Environment="OLLAMA_KV_CACHE_TYPE=q8_0"
+Environment="OLLAMA_CONTEXT_LENGTH=32768"
 
 [Install]
 WantedBy=multi-user.target

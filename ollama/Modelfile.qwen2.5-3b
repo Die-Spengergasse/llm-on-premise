@@ -5,7 +5,7 @@ PARAMETER top_p 0.85
 PARAMETER top_k 40
 PARAMETER repeat_penalty 1.08
 PARAMETER min_p 0.05
-PARAMETER num_ctx 24576
+PARAMETER num_ctx 32768
 
 TEMPLATE """{{- if .Messages }}
 {{- if .System }}<|im_start|>system

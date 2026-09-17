@@ -1,5 +1,9 @@
 No pending tasks. Last cleared: 2026-09-17.
 
+## Issue #20 — Implemented (2026-09-17, commit pending, open)
+Alle 6 Ollama-Tags auf architektonisches Max (`ollama show`: 8b/1.7b=40960, 2.5:3b=32768, llama=131072, qwen3.5=262144); fehlende Modelfiles qwen3.5 neu erstellt (alle getunt temp 0.5 + No-Tools); `OLLAMA_CONTEXT_LENGTH=32768`-Fallback live + Repo; LiteLLM-`max_input_tokens` + OpenWebUI-`max_tokens` (1.7b→38912) synchronisiert; e2e via LiteLLM verifiziert (8b antwortet clean, Guard ACCEPT, 22 % CPU-Offload akzeptiert).
+Folge-Änderungen für nächsten Commit (#20): Modelfiles, ollama.service, README, DOMAIN, STATE, HANDOFF (dieser Eintrag).
+
 ## Key New File
 - `docs/ai/TIPS.md` — Open WebUI DB operations (model params, capabilities, web search config, `{}` bug fix, SearXNG integration status, models-proxy-Kette/Cache-TTL/10.8.0.18-Pitfall). Read before any future Open WebUI or LiteLLM configuration work.
 

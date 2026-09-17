@@ -129,3 +129,14 @@
 - **Quant-Empfehlung für 8 GB VRAM (gregor)**: e4b-it-qat @128K (`gemma4:e4b-128k`) — belegt ~6,35 GB, 1,4 GB Headroom für KV-Wachstum.
 - **KV-Cache skaliert ~linear mit `num_ctx`**: bei festen Gewichten ist `num_ctx` der primäre Hebel für VRAM-Auslastung, nicht die Quantisierung-Auswahl (solange die Quantisierung in VRAM passt). `num_ctx` über die Trainings-Grenze hinaus → Verfall.
 - **Kein 256K-Versuch auf e4b**: Trainingskontext ist 128K; höhere Werte verschwenden KV-Cache und produzieren Müll. 256K erfordert mindestens 12b.
+
+## Ollama Live-Kontextlängen (Stand 2026-09-17, Issue #20)
+
+`ollama show`-Maxima (gguf-Metadaten, `num_ctx` darüber wird gecappt) — alle Tags aufs Arch-Max gesetzt:
+
+- **qwen3:8b / qwen3:1.7b**: 40960
+- **qwen2.5:3b**: 32768
+- **llama3.2:3b**: 131072
+- **qwen3.5:9b / qwen3.5:4b**: 262144
+- Server-Fallback `OLLAMA_CONTEXT_LENGTH=32768` (nur für Tags ohne Modelfile-`num_ctx`; Modelfile gewinnt immer).
+- Tradeoff auf 8 GB VRAM: Arch-Max = größtes Fenster, nicht schnellstes — qwen3:8b@40K läuft mit 22 % CPU-Offload (Issue #20).
