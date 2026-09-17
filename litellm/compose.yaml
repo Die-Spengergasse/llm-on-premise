@@ -16,7 +16,9 @@ services:
       retries: 5
 
   litellm:
-    image: ghcr.io/berriai/litellm:main-stable
+    # Pinned 2026-09-17 (litellm 1.101.0) — floating main-stable caused silent drift.
+    # To upgrade: compose pull litellm, verify, then update this digest.
+    image: ghcr.io/berriai/litellm:main-stable@sha256:d295634e09c648dcdb72c4cc2dd226f5fb87823a73e88cbbed6f205e4deb044b
     container_name: litellm
     restart: unless-stopped
     ports:

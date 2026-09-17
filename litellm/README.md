@@ -20,7 +20,7 @@ Virtual Keys + Budgets, Rate Limiting, Multi-Backend-Routing, Audit Logging.
 
 | Eigenschaft | Wert |
 |-------------|------|
-| Container | `litellm` (Docker, `ghcr.io/berriai/litellm:main-stable` v1.91.0) |
+| Container | `litellm` (Docker, `ghcr.io/berriai/litellm:main-stable` v1.101.0, Digest-gepinnt in `compose.yaml`) |
 | Port | `:11434` |
 | Config | `config.yaml` (Framework-Settings, `model_list` leer) |
 | DB-Mode | `store_model_in_db=true` — Modelle in Postgres `LiteLLM_ProxyModelTable` |

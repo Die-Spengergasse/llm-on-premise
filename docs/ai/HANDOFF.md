@@ -3,17 +3,20 @@ No pending tasks. Last cleared: 2026-09-17.
 ## Key New File
 - `docs/ai/TIPS.md` — Open WebUI DB operations (model params, capabilities, web search config, `{}` bug fix, SearXNG integration status, models-proxy-Kette/Cache-TTL/10.8.0.18-Pitfall). Read before any future Open WebUI or LiteLLM configuration work.
 
-## Issue #17 — Implemented (2026-09-17, commit pending)
-Qwen3:8B lokal für OpenCode verfügbar gemacht. Implementiert + verifiziert, Commit steht noch aus.
+## Issue #18 — Evaluated (2026-09-17, commit pending)
+Streaming-Tool-Calls via LiteLLM defekt — Upgrade 1.91.0 → 1.101.0 evaluiert, Bug bleibt (Root-Cause: LiteLLM demotiert native ollama-tool_calls-Frames zu Content-Text). Behalten + Digest gepinnt (keine Regression).
 Repo-Änderungen:
-- `ollama/Modelfile.qwen3-8b` (neu, Parameter wie 1.7b)
-- `docs/ai/PITFALLS.md` → Qwen3-Thinking-Budget-Eintrag
-- `docs/ai/STATE.md` → 7-Modell-Fokus + Completed-Eintrag
+- `litellm/compose.yaml` → Image-Digest-Pin (main-stable@sha256:d295…044b)
+- `litellm/README.md` → Version v1.101.0
+- `docs/ai/PITFALLS.md` → Streaming-Root-Cause-Eintrag
+- `docs/ai/DECISIONS.md` → Upgrade+Pin-Entscheidung
+- `docs/ai/STATE.md` → 1.101.0-Fokus + Completed-Eintrag
+Live-Änderungen (nicht git-tracked): litellm-Container auf 1.101.0, `/opt/litellm/compose.yaml` identisch gepinnt.
+Offen: Upstream-Issue bei BerriAI/litellm mit sanitized Repro (Keys/IPs scrubben!) — Entscheidung dem User überlassen.
+Rollback-Anker: Image 078f96272f0c (1.91.0) lokal vorhanden; Backups unter /tmp/opencode/baseline_20260917*.
 
-Live-Änderungen (nicht git-tracked):
-- ollama: `qwen3:8b` (5,2 GB) gepullt + Tag-Override via Modelfile
-- LiteLLM-DB: INSERT qwen3:8b (jetzt 7 Zeilen)
-- Container `litellm` restartet, opencode-Cache gelöscht
+## Issue #17 — Implemented (2026-09-17, committed dbb21e2, open)
+Qwen3:8B lokal für OpenCode verfügbar gemacht. Implementiert + verifiziert, committed + gepusht. Issue offen (kein explizites finish).
 
 ## Issue #16 — Completed (2026-09-17, committed 7a5fcb5, closed)
 Repo-Änderungen (Phase 1/4):
