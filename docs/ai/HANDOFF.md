@@ -3,22 +3,15 @@ No pending tasks. Last cleared: 2026-09-17.
 ## Key New File
 - `docs/ai/TIPS.md` — Open WebUI DB operations (model params, capabilities, web search config, `{}` bug fix, SearXNG integration status, models-proxy-Kette/Cache-TTL/10.8.0.18-Pitfall). Read before any future Open WebUI or LiteLLM configuration work.
 
-## Issue #18 — Evaluated (2026-09-17, commit pending)
+## Issue #18 — Evaluated (2026-09-17, committed 921c4a6 + Folge-Commit pending, open)
 Streaming-Tool-Calls via LiteLLM defekt — Upgrade 1.91.0 → 1.101.0 evaluiert, Bug bleibt (Root-Cause: LiteLLM demotiert native ollama-tool_calls-Frames zu Content-Text). Behalten + Digest gepinnt (keine Regression).
-Repo-Änderungen:
-- `litellm/compose.yaml` → Image-Digest-Pin (main-stable@sha256:d295…044b)
-- `litellm/README.md` → Version v1.101.0
-- `docs/ai/PITFALLS.md` → Streaming-Root-Cause-Eintrag
-- `docs/ai/DECISIONS.md` → Upgrade+Pin-Entscheidung
-- `docs/ai/STATE.md` → 1.101.0-Fokus + Completed-Eintrag
-Live-Änderungen (nicht git-tracked): litellm-Container auf 1.101.0, `/opt/litellm/compose.yaml` identisch gepinnt.
-Offen: Upstream-Issue bei BerriAI/litellm mit sanitized Repro (Keys/IPs scrubben!) — Entscheidung dem User überlassen.
-Rollback-Anker: Image 078f96272f0c (1.91.0) lokal vorhanden; Backups unter /tmp/opencode/baseline_20260917*.
+Workaround VERIFIZIERT: Direkt-Provider `ollama-direct` in `~/.config/opencode/opencode.json` (alle 6 Tags, Default `ollama-direct/qwen3:8b`) — e2e-Agent-Run mit Write-Tool erfolgreich. Nicht git-tracked (Heimverzeichnis).
+Folge-Änderungen für nächsten Commit (#18): CONVENTIONS (Direkt-Provider-Regel), STATE (Direkt-Fokus), HANDOFF (dieser Eintrag).
 
-## Issue #17 — Implemented (2026-09-17, committed dbb21e2 + Folge-Commit pending, open)
-Qwen3:8B lokal für OpenCode verfügbar gemacht + Whisper gestoppt (8b jetzt 100 % GPU, 58 tok/s).
-Folge-Änderungen für nächsten Commit: PITFALLS (Whisper-VRAM-Eintrag), STATE (Whisper-gestoppt-Fokus + Completed-Eintrag).
-Live-Zustand: whisper-Container gestoppt (Restart via `up -d whisper`); STT tot; `whisper-1`-Eintrag bleibt im Katalog.
+## Issue #17 — Implemented (2026-09-17, committed dbb21e2 + 60178ce + Folge-Commit pending, open)
+Qwen3:8B lokal für OpenCode + Whisper gestoppt (100 % GPU, 58 tok/s) + Whisper-Deaktivierung (`restart: no`, DB-Eintrag gelöscht, STT künftig via GROQ).
+Folge-Änderungen für nächsten Commit (#17): `litellm/compose.yaml` (restart-no), PITFALLS (Restore-Anleitung), STATE (Dauerhaft-Fokus), HANDOFF (dieser Eintrag).
+Live-Zustand: whisper-Container `exited` + Autostart aus; Katalog = 6 Modelle ohne whisper-1.
 
 ## Issue #16 — Completed (2026-09-17, committed 7a5fcb5, closed)
 Repo-Änderungen (Phase 1/4):

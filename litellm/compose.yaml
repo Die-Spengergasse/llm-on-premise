@@ -93,7 +93,9 @@ services:
   whisper:
     image: hwdsl2/whisper-server:cuda
     container_name: whisper
-    restart: unless-stopped
+    # Deaktiviert 2026-09-17 (#17): STT kommt künftig via GROQ. Nie Autostart (VRAM-Konkurrenz mit 8B-Modellen).
+    # Manueller Start bei Bedarf: docker compose up -d whisper
+    restart: "no"
     ports:
       - "11437:9000"
     environment:
