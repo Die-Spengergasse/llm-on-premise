@@ -36,6 +36,8 @@ Jedes Modell hat einen tuned Modelfile im `/ollama/` Verzeichnis:
 | Datei | Modell | Besonderheiten |
 |-------|--------|----------------|
 | `Modelfile.qwen3-8b` | qwen3:8b | `num_ctx 40960` (Arch-Max), "Do NOT use tools" |
+| `Modelfile.qwen3-8b-24k` | qwen3:8b-24k | **Agent-Default**: `num_ctx 24576` = 100 % GPU, schnellster + zuverlässigster im Agenten-Test (6/6, Issue #20). Direkt-only, nicht in LiteLLM registriert. |
+| `Modelfile.qwen3.5-4b-64k` | qwen3.5:4b-64k | **Large-Window-Agent**: `num_ctx 65536` = 100 % GPU bei 4,6 GB, 6/6 im Agenten-Test. Direkt-only. |
 | `Modelfile.qwen3.5-9b` | qwen3.5:9b | `num_ctx 262144` (Arch-Max), "Do NOT use tools" |
 | `Modelfile.qwen3.5-4b` | qwen3.5:4b | `num_ctx 262144` (Arch-Max), "Do NOT use tools" |
 | `Modelfile.qwen3-1.7b` | qwen3:1.7b | `reasoning_tags=false`, `think=false`, "Do NOT use tools" |
