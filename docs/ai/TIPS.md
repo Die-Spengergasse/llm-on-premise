@@ -4,6 +4,38 @@ Tips & Tricks for Open WebUI administration, database operations, and
 known configuration patterns. Additive knowledge — read before digging
 into a new Open WebUI issue.
 
+## Models-Proxy-Kette & Stale-Modelllisten (opencode-Modellpicker)
+
+Datenfluss für die Modelle im opencode-Picker:
+
+```
+Ollama → LiteLLM-DB (LiteLLM_ProxyModelTable, store_model_in_db=true)
+       → models-proxy /api.json (:11436, container-intern :8000)
+       → OPENCODE_MODELS_URL-Client → Disk-Cache (~/.cache/opencode/models*.json)
+```
+
+- **models-proxy ist nur ein Durchstich**: es serviert exakt das, was LiteLLM
+  `/v1/models` meldet (per `LITELLM_PROXY_KEY`). Stale Modellliste = fast immer
+  EINDRÜCKLICH die LiteLLM-DB (oder der Disk-Cache) — nicht der Proxy.
+- Recency: opencode cached die `api.json` und refresht nur ~alle 60 min
+  (TTL). Das Cache-File (`~/.cache/opencode/models*.json`) wird unconditional
+  vom Disk serviert und bei Fehlschlag still refreshed → nach DB-Änderungen
+  Cache löschen: `rm -f ~/.cache/opencode/models*.json` oder
+  `opencode models --refresh`.
+- `OPENCODE_MODELS_URL` kennt nur `/api.json`; es gibt keinen separaten
+  Endpoint. Der Proxy lädt Upstream models.dev + injiziert den `litellm`-Provider.
+- Verifikations-Endpoints: `curl -s -H "Authorization: Bearer $LITELLM_PROXY_KEY"
+  http://localhost:11434/v1/models` (exakt die 6 gregor-Modelle) und
+  `curl -s http://localhost:11436/api.json` (`litellm.api` UND 6 Models prüfen).
+- **`10.8.0.18` ist eine tote IP** (2026-07; gregor war damals dort). Heute ist
+  gregor `10.8.0.16` (VPN). Kein DNS für gregor — IP-Doppel in
+  `/opt/litellm/.env` (LITELLM_PUBLIC_URL), opencode.json (baseURL),
+  bash_aliases (OPENCODE_MODELS_URL) und LiteLLM-DB api_base beim Wechsel:
+  alle synchron pflegen, NIE `10.8.0.18` einbauen.
+- lokale SearXNG für opencode-MCP: `SEARX_URL=http://localhost:8888/search`
+  (lokale Instanz auf 127.0.0.1:8888, `/healthz` → 200). Nicht mehr die
+  remote claw-Instanz verwenden.
+
 ## Open WebUI Database
 
 ### Location

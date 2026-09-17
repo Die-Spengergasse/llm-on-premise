@@ -1,7 +1,27 @@
-No pending tasks. Last cleared: 2026-07-05.
+No pending tasks. Last cleared: 2026-09-17.
 
 ## Key New File
-- `docs/ai/TIPS.md` — Open WebUI DB operations (model params, capabilities, web search config, `{}` bug fix, SearXNG integration status). Read before any future Open WebUI configuration work.
+- `docs/ai/TIPS.md` — Open WebUI DB operations (model params, capabilities, web search config, `{}` bug fix, SearXNG integration status, models-proxy-Kette/Cache-TTL/10.8.0.18-Pitfall). Read before any future Open WebUI or LiteLLM configuration work.
+
+## Issue #16 — Completed (2026-09-17, not yet committed)
+Alle Änderungen aus Issue #16 (Stale-Modellliste + 10.8.0.18-Hardcodings) sind fertig implementiert und verifiziert. Der Commit steht noch aus.
+Repo-Änderungen (Phase 1/4):
+- `litellm/.env.example` → LITELLM_PUBLIC_URL auf 10.8.0.16 + Sync-Header
+- `litellm/opencode.json.example` → baseURL 10.8.0.16
+- `litellm/opencode-env.sh` → OPENCODE_MODELS_URL 10.8.0.16
+- `litellm/models_proxy.py` → default-Fallback 10.8.0.16
+- `litellm/README.md` → SQL-Beispiel api_base 10.8.0.16
+- `docs/ai/CONVENTIONS.md` → IP-Sync-Regel, Modell-Kette
+- `docs/ai/TIPS.md` → Models-Proxy-Kette, Stale-Debugging, 10.8.0.18
+- `docs/ai/PITFALLS.md` → 4 neue Einträge (10.8.0.18, host.docker.internal, stale-cache, stale-models-dual-layer)
+- `docs/ai/DECISIONS.md` → Entscheidung 2026-09-17 (10.8.0.16 als canonical URL-Basis)
+- `docs/ai/STATE.md` → Current Focus aktualisiert (5/6 Modelle), Cortecs-Eintrag + Issue-16-Eintrag in Completed
+
+Live-Änderungen (Phase 2, nicht git-tracked):
+- `/opt/litellm/.env`: LITELLM_PUBLIC_URL → 10.8.0.16
+- LiteLLM-DB: 6 Modelle (UPDATE api_base 2×, INSERT 3×, DELETE 1×) — Dump vorher unter `/tmp/opencode/litellm_table_before_20260917_*.txt`
+- `litellm/models_proxy.py`: default synchronisiert (copy aus repo)
+- Container `litellm` + `models-proxy` force-recreated
 
 ## Open (2026-08-13)
 

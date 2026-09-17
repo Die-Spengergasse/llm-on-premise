@@ -26,7 +26,7 @@ UA = os.environ.get("UPSTREAM_USER_AGENT", "opencode-models-proxy/1.0 (+https://
 LITELLM_INTERNAL = os.environ.get("LITELLM_INTERNAL_URL", "http://litellm:11434")
 LITELLM_KEY = os.environ.get("LITELLM_PROXY_KEY", "")
 # Public baseURL opencode clients will actually call for inference:
-LITELLM_PUBLIC = os.environ.get("LITELLM_PUBLIC_URL", "http://10.8.0.18:11434/v1")
+LITELLM_PUBLIC = os.environ.get("LITELLM_PUBLIC_URL", "http://10.8.0.16:11434/v1")
 CACHE_DIR = os.environ.get("CACHE_DIR", "/app/cache")
 TTL = int(os.environ.get("UPSTREAM_TTL", "600"))  # 10 min
 HOST_LABEL = os.environ.get("HOST_LABEL", "gregor")

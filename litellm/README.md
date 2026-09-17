@@ -61,7 +61,7 @@ LiteLLM :11434 ──► SingleGpuGuard (busy→429 / idle→swap)
      (model_id, model_name, litellm_params, model_info, created_by, updated_by)
    VALUES (
      '<unique-id>', '<tag>',
-     '{"model": "ollama/<tag>", "api_base": "http://10.8.0.18:11435", "num_retries": 0}',
+     '{"model": "ollama/<tag>", "api_base": "http://10.8.0.16:11435", "num_retries": 0}',
      '{"supports_function_calling": false}',
      'admin', 'admin'
    );
