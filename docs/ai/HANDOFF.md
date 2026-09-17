@@ -3,8 +3,19 @@ No pending tasks. Last cleared: 2026-09-17.
 ## Key New File
 - `docs/ai/TIPS.md` — Open WebUI DB operations (model params, capabilities, web search config, `{}` bug fix, SearXNG integration status, models-proxy-Kette/Cache-TTL/10.8.0.18-Pitfall). Read before any future Open WebUI or LiteLLM configuration work.
 
-## Issue #16 — Completed (2026-09-17, not yet committed)
-Alle Änderungen aus Issue #16 (Stale-Modellliste + 10.8.0.18-Hardcodings) sind fertig implementiert und verifiziert. Der Commit steht noch aus.
+## Issue #17 — Implemented (2026-09-17, commit pending)
+Qwen3:8B lokal für OpenCode verfügbar gemacht. Implementiert + verifiziert, Commit steht noch aus.
+Repo-Änderungen:
+- `ollama/Modelfile.qwen3-8b` (neu, Parameter wie 1.7b)
+- `docs/ai/PITFALLS.md` → Qwen3-Thinking-Budget-Eintrag
+- `docs/ai/STATE.md` → 7-Modell-Fokus + Completed-Eintrag
+
+Live-Änderungen (nicht git-tracked):
+- ollama: `qwen3:8b` (5,2 GB) gepullt + Tag-Override via Modelfile
+- LiteLLM-DB: INSERT qwen3:8b (jetzt 7 Zeilen)
+- Container `litellm` restartet, opencode-Cache gelöscht
+
+## Issue #16 — Completed (2026-09-17, committed 7a5fcb5, closed)
 Repo-Änderungen (Phase 1/4):
 - `litellm/.env.example` → LITELLM_PUBLIC_URL auf 10.8.0.16 + Sync-Header
 - `litellm/opencode.json.example` → baseURL 10.8.0.16
