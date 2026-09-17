@@ -15,8 +15,10 @@ Live-Änderungen (nicht git-tracked): litellm-Container auf 1.101.0, `/opt/litel
 Offen: Upstream-Issue bei BerriAI/litellm mit sanitized Repro (Keys/IPs scrubben!) — Entscheidung dem User überlassen.
 Rollback-Anker: Image 078f96272f0c (1.91.0) lokal vorhanden; Backups unter /tmp/opencode/baseline_20260917*.
 
-## Issue #17 — Implemented (2026-09-17, committed dbb21e2, open)
-Qwen3:8B lokal für OpenCode verfügbar gemacht. Implementiert + verifiziert, committed + gepusht. Issue offen (kein explizites finish).
+## Issue #17 — Implemented (2026-09-17, committed dbb21e2 + Folge-Commit pending, open)
+Qwen3:8B lokal für OpenCode verfügbar gemacht + Whisper gestoppt (8b jetzt 100 % GPU, 58 tok/s).
+Folge-Änderungen für nächsten Commit: PITFALLS (Whisper-VRAM-Eintrag), STATE (Whisper-gestoppt-Fokus + Completed-Eintrag).
+Live-Zustand: whisper-Container gestoppt (Restart via `up -d whisper`); STT tot; `whisper-1`-Eintrag bleibt im Katalog.
 
 ## Issue #16 — Completed (2026-09-17, committed 7a5fcb5, closed)
 Repo-Änderungen (Phase 1/4):
